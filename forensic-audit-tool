@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEPBA 190 vs. UMass: Forensic Overtime Audit</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React & ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    
+    <!-- Babel for JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <!-- SheetJS for robust CSV parsing -->
+    <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
+
+    <style>
+        body {
+            background-color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Prevent body scroll, handle in app */
+        }
+        .audit-row:nth-child(even) {
+            background-color: #f8fafc;
+        }
+        .audit-row:hover {
+            background-color: #e0f2fe; /* Light blue hover */
+        }
+        /* Tight spreadsheet feel */
+        .cell-base {
+            padding: 4px 8px;
+            white-space: nowrap;
+            border-right: 1px solid #e2e8f0;
+            font-size: 11px;
+        }
+        .cell-header {
+            padding: 8px;
+            white-space: nowrap;
+            border-right: 1px solid #d1d5db;
+            font-size: 11px;
+            font-weight: 700;
+        }
+        .custom-scroll::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+            border: 2px solid #f1f1f1;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+        /* Toggle Switch */
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #68D391;
+        }
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #68D391;
+        }
+        .pay-period-header {
+            background-color: #e2e8f0;
+            border-top: 2px solid #94a3b8;
+            border-bottom: 1px solid #cbd5e1;
+            color: #475569;
+            font-weight: bold;
+            font-size: 12px;
+            padding: 8px 12px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="root"></div>
+
+<script type="text/babel">
+
+    const { useState, useEffect } = React;
+
+    // --- ICON COMPONENT ---
+    const Icon = ({ name, size = 16, className, onClick }) => {
+        const icons = {
+            gavel: <path d="m14.5 12.5-8 8a2.121 2.121 0 0 1-3-3l8-8m8 8 6-6m-8-2 6-6m-7 5 8 8m4-4-8-8"/>,
+            alert: <g><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></g>,
+            calculator: <g><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></g>,
+            upload: <g><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></g>,
+            download: <g><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></g>,
+            trash: <g><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></g>
+        };
+        return (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width={size} height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" 
+                className={className}
+                onClick={onClick}
+                style={{cursor: onClick ? 'pointer' : 'default'}}
+            >
+                {icons[name] || <circle cx="12" cy="12" r="10"/>}
+            </svg>
+        );
+    };
+
+    // --- HELPER FUNCTIONS ---
+
+    // Convert Excel Serial Date to JS Date
+    function excelDateToJSDate(serial) {
+        if (!serial) return null;
+        const utc_days  = Math.floor(serial - 25569);
+        const utc_value = utc_days * 86400000;
+        const date_info = new Date(utc_value);
+        const date = new Date(date_info.getFullYear(), date_info.getMonth(), date_info.getDate() + 1);
+        return date;
+    }
+
+    // Convert Excel fraction time (0.5 = 12:00) to HH:MM
+    function excelFractionToTime(fraction) {
+        if (fraction === undefined || fraction === null) return "00:00";
+        if (typeof fraction === 'string' && fraction.includes(':')) return fraction;
+        if (typeof fraction === 'number') {
+            const totalSeconds = Math.round(fraction * 86400); 
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+        }
+        return "00:00";
+    }
+
+    // Robust Date Parser
+    function parseDate(val) {
+        if (!val) return "Invalid";
+        if (typeof val === 'number') {
+            const d = excelDateToJSDate(val);
+            return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        }
+        const d = new Date(val);
+        if (!isNaN(d.getTime())) {
+             return d.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' });
+        }
+        return val;
+    }
+
+    // Robust Time Parser
+    function parseTimeDecimal(val) {
+        if (typeof val === 'number') return val * 24;
+        if (typeof val === 'string' && val.includes(':')) {
+            const [h, m] = val.split(':').map(Number);
+            return h + (m / 60);
+        }
+        return 0;
+    }
+
+    function formatTimeDisplay(val) {
+        return excelFractionToTime(val);
+    }
+
+    function calculateDuration(start, end) {
+        let s = parseTimeDecimal(start);
+        let e = parseTimeDecimal(end);
+        if (e < s) e += 24; 
+        return parseFloat((e - s).toFixed(2));
+    }
+
+    // Determine Pay Period
+    function getPayPeriod(dateStr) {
+        if (!dateStr || dateStr === "Invalid") return "Unknown Period";
+        const d = new Date(dateStr);
+        if (isNaN(d.getTime())) return "Unknown Period";
+
+        // Anchor: June 15, 2025
+        const anchor = new Date("2025-06-15T00:00:00");
+        const msPerDay = 86400000;
+        const daysDiff = Math.floor((d - anchor) / msPerDay);
+        const periodsSince = Math.floor(daysDiff / 14);
+        
+        const periodStart = new Date(anchor.getTime() + (periodsSince * 14 * msPerDay));
+        const periodEnd = new Date(periodStart.getTime() + (13 * msPerDay));
+        
+        const fmt = (dt) => dt.toLocaleDateString('en-US', {month:'2-digit', day:'2-digit', year:'numeric'});
+        return `${fmt(periodStart)} - ${fmt(periodEnd)}`;
+    }
+
+    // --- APP COMPONENT ---
+    const App = () => {
+        // Default Config
+        const [config, setConfig] = useState({
+            baseRate: 42.50,
+            baseShiftDiff: 0.00, // Permanent diff input
+            eveningDiff: 1.00,
+            nightDiff: 1.50,
+            weekendDiff: 1.25,
+            multiplier: 1.5,
+            
+            // Remuneration Toggles
+            includeWellness: false,
+            wellnessRate: 0.38,
+            includeIncident: false,
+            incidentRate: 0.50,
+            includeOnCall: false,
+            onCallAnnual: 2080,
+            
+            // Premium Logic
+            includeDEPremium: true,
+            dePremiumPercent: 15,
+
+            groupByPayPeriod: true
+        });
+
+        const [rawData, setRawData] = useState([]);
+        const [processedData, setProcessedData] = useState([]);
+        const [groupedData, setGroupedData] = useState({});
+        const [totals, setTotals] = useState({ owed: 0, hours: 0, count: 0 });
+        const [isDragging, setIsDragging] = useState(false);
+
+        // --- SAMPLE DATA LOAD ---
+        useEffect(() => {
+            const sample = [
+                { Date: 44686, Weekday: "Thursday", Shift: "7a - 3p", Name: "Oravec, Gregory", Rank: "Police Officer", Start: 0.291666, End: 0.604166, Attendance: "Dept OT (1.5)", Duty: "Training", Unit: "Range #125", Post: "" },
+                { Date: 44695, Weekday: "Saturday", Shift: "11p - 7a", Name: "Oravec, Gregory", Rank: "Police Officer", Start: 0.958333, End: 0.291666, Attendance: "Dept OT (1.5)", Duty: "Patrol", Unit: "Job# 22-309-DO Outside Detail", Post: "Sector 1" },
+                { Date: 45983, Weekday: "Saturday", Shift: "3p - 11p", Name: "Oravec, Gregory", Rank: "Police Officer", Start: 0.729166, End: 0.916666, Attendance: "Dept OT (1.5)", Duty: "Patrol", Unit: "Job# 25-617-DO Outside Detail", Post: "" },
+                { Date: 45985, Weekday: "Monday", Shift: "7a - 3p", Name: "Oravec, Gregory", Rank: "Police Officer", Start: 0.291666, End: 0.625, Attendance: "Detail OT", Duty: "Patrol", Unit: "Job# 25-359-DE Vendor ID: YCON", Post: "" }
+            ];
+            setRawData(sample);
+        }, []);
+
+        // --- CORE CALCULATION ENGINE ---
+        useEffect(() => {
+            let totalLoss = 0;
+            let totalHours = 0;
+
+            const onCallHourly = config.includeOnCall ? (config.onCallAnnual / 2080) : 0;
+
+            const updated = rawData.map((row, idx) => {
+                const rawDate = row['Date'] || row['date'];
+                const dateStr = parseDate(rawDate);
+                const day = row['Weekday'] || row['Day'] || row['day'] || "";
+                
+                const startRaw = row['Start'] || row['start'];
+                const endRaw = row['End'] || row['end'];
+                
+                const hours = calculateDuration(startRaw, endRaw);
+                const sVal = parseTimeDecimal(startRaw); 
+                
+                // --- DIFF LOGIC ---
+                let activeDiffs = []; // For Math (includes stipends)
+                let visualDiffs = []; // For "Shift Diffs" Column
+                let diffRate = 0;
+
+                // Permanent/Base Shift Diff (From Config)
+                if (config.baseShiftDiff > 0) {
+                     diffRate += config.baseShiftDiff;
+                     activeDiffs.push("BaseDiff");
+                }
+
+                // Weekend?
+                if (day && (day.toLowerCase().includes('sat') || day.toLowerCase().includes('sun'))) {
+                    activeDiffs.push("Weekend");
+                    visualDiffs.push("Weekend");
+                    diffRate += config.weekendDiff;
+                }
+
+                // Night/Evening Logic
+                if (sVal >= 15 && sVal < 23) {
+                    activeDiffs.push("Eve");
+                    visualDiffs.push("Eve");
+                    diffRate += config.eveningDiff;
+                } else if (sVal >= 23 || sVal < 7) {
+                    activeDiffs.push("Night");
+                    visualDiffs.push("Night");
+                    diffRate += config.nightDiff;
+                }
+
+                // FLSA Add-ons
+                let flsaAddons = 0;
+                if (config.includeWellness) {
+                    flsaAddons += config.wellnessRate;
+                    activeDiffs.push("Well");
+                }
+                if (config.includeIncident) {
+                    flsaAddons += config.incidentRate;
+                    activeDiffs.push("Inc");
+                }
+                if (config.includeOnCall) {
+                    flsaAddons += onCallHourly;
+                    activeDiffs.push("OnCall");
+                }
+
+                // --- 15% DE PREMIUM LOGIC ---
+                // Check Unit or Post for "-DE"
+                const unitStr = (row.Unit || "").toString().toUpperCase();
+                const postStr = (row.Post || "").toString().toUpperCase();
+                const isDE = unitStr.includes("-DE") || postStr.includes("-DE");
+                
+                if (isDE && config.includeDEPremium) {
+                    visualDiffs.push(`DE (+${config.dePremiumPercent}%)`);
+                }
+
+                // --- RATES ---
+                // Management: Assuming they pay Base * 1.5 (Standard Grievance)
+                const mgmtRate = config.baseRate * config.multiplier;
+                const mgmtTotal = hours * mgmtRate;
+
+                // Union / FLSA Correct Calculation
+                // Formula: (Base + Stipends + BaseDiff + EarnedDiffs) * 1.5
+                const unionRegRate = config.baseRate + diffRate + flsaAddons;
+                let unionOTRate = unionRegRate * config.multiplier;
+                
+                // Apply DE Premium if applicable (Extra % on top of total OT rate)
+                if (isDE && config.includeDEPremium) {
+                    unionOTRate = unionOTRate * (1 + (config.dePremiumPercent / 100));
+                }
+
+                const unionTotal = hours * unionOTRate;
+                const loss = unionTotal - mgmtTotal;
+
+                if (!isNaN(loss)) totalLoss += loss;
+                if (!isNaN(hours)) totalHours += hours;
+
+                return {
+                    ...row,
+                    _formattedDate: dateStr,
+                    _formattedStart: formatTimeDisplay(startRaw),
+                    _formattedEnd: formatTimeDisplay(endRaw),
+                    _payPeriod: getPayPeriod(dateStr),
+                    _hours: hours,
+                    _diffLabels: activeDiffs, 
+                    _visualDiffs: visualDiffs.join('/') || '-', 
+                    _diffRate: diffRate + flsaAddons,
+                    _mgmtTotal: mgmtTotal,
+                    _unionTotal: unionTotal,
+                    _loss: loss,
+                    _id: idx
+                };
+            });
+
+            // Grouping logic
+            const grouped = updated.reduce((acc, row) => {
+                const pp = row._payPeriod;
+                if (!acc[pp]) acc[pp] = [];
+                acc[pp].push(row);
+                return acc;
+            }, {});
+
+            const sortedKeys = Object.keys(grouped).sort((a,b) => {
+                const dateA = new Date(a.split(' - ')[0]);
+                const dateB = new Date(b.split(' - ')[0]);
+                return dateB - dateA; 
+            });
+            
+            const sortedGrouped = {};
+            sortedKeys.forEach(k => sortedGrouped[k] = grouped[k]);
+
+            setProcessedData(updated);
+            setGroupedData(sortedGrouped);
+            setTotals({ owed: totalLoss, hours: totalHours, count: updated.length });
+
+        }, [config, rawData]);
+
+
+        // --- FILE HANDLING ---
+        const handleDrop = (e) => {
+            e.preventDefault();
+            setIsDragging(false);
+            const file = e.dataTransfer.files[0];
+            processFile(file);
+        };
+
+        const handleFileUpload = (e) => {
+            const file = e.target.files[0];
+            processFile(file);
+        };
+
+        const processFile = (file) => {
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const bstr = evt.target.result;
+                const wb = XLSX.read(bstr, { type: 'binary' });
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json(ws, { raw: true });
+                setRawData(data);
+            };
+            reader.readAsBinaryString(file);
+        };
+
+        const exportCSV = () => {
+             const exportData = processedData.map(row => {
+                 const { _hours, _diffLabels, _visualDiffs, _diffRate, _mgmtTotal, _unionTotal, _loss, _id, _payPeriod, _formattedDate, _formattedStart, _formattedEnd, ...original } = row;
+                 return {
+                     'Pay Period': _payPeriod,
+                     'Date': _formattedDate,
+                     ...original,
+                     'Start': _formattedStart,
+                     'End': _formattedEnd,
+                     'Calc Hours': _hours.toFixed(2),
+                     'Shift Diffs': _visualDiffs,
+                     'All Add-ons': _diffLabels.join('+'),
+                     'Added to Base': _diffRate.toFixed(2),
+                     'Mgmt Paid': _mgmtTotal.toFixed(2),
+                     'FLSA Paid': _unionTotal.toFixed(2),
+                     'Variance': _loss.toFixed(2)
+                 };
+             });
+             
+             const ws = XLSX.utils.json_to_sheet(exportData);
+             const wb = XLSX.utils.book_new();
+             XLSX.utils.book_append_sheet(wb, ws, "Forensic Audit");
+             XLSX.writeFile(wb, "NEPBA_Forensic_Audit.xlsx");
+        };
+
+        // --- RENDER ---
+        return (
+            <div 
+                className="flex flex-col h-screen w-full bg-slate-50"
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+            >
+                {/* DRAG OVERLAY */}
+                {isDragging && (
+                    <div className="absolute inset-0 bg-blue-500/20 z-50 flex items-center justify-center border-4 border-blue-500 border-dashed m-4 rounded-xl backdrop-blur-sm">
+                        <div className="bg-white p-8 rounded-xl shadow-2xl text-center">
+                            <Icon name="upload" size={48} className="mx-auto text-blue-600 mb-4"/>
+                            <h2 className="text-2xl font-bold text-gray-800">Drop Excel/CSV File Here</h2>
+                            <p className="text-gray-500">Instant Forensic Analysis</p>
+                        </div>
+                    </div>
+                )}
+
+                {/* HEADER */}
+                <header className="bg-slate-900 text-white p-4 shadow-md shrink-0 z-20 flex justify-between items-center">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-yellow-500 rounded text-slate-900">
+                            <Icon name="gavel" size={20} />
+                        </div>
+                        <div>
+                            <h1 className="font-bold text-lg leading-tight">Shift Differential Grievance Audit</h1>
+                            <div className="text-xs text-slate-400 flex gap-2">
+                                <span>NEPBA 190</span>
+                                <span>•</span>
+                                <span>UMass PD</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                        <div className="text-right hidden md:block">
+                            <div className="text-xs text-slate-400 uppercase tracking-wider">Total Wage Theft ID'd</div>
+                            <div className="text-2xl font-mono font-bold text-red-400">
+                                ${totals.owed.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </div>
+                        </div>
+                        
+                        <label className="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 px-4 py-2 rounded cursor-pointer border border-slate-700 transition-all">
+                            <Icon name="upload" size={16} className="text-blue-400"/>
+                            <span className="text-sm font-medium">Load Data</span>
+                            <input type="file" accept=".csv, .xlsx, .xls" onChange={handleFileUpload} className="hidden" />
+                        </label>
+
+                        <button onClick={exportCSV} className="flex items-center gap-2 bg-yellow-600 hover:bg-yellow-500 px-4 py-2 rounded text-sm font-medium transition-all shadow-lg shadow-yellow-900/20">
+                            <Icon name="download" size={16} />
+                            <span>Export Report</span>
+                        </button>
+                    </div>
+                </header>
+
+                <div className="flex flex-1 overflow-hidden">
+                    
+                    {/* SIDEBAR CONFIG */}
+                    <div className="w-72 bg-white border-r border-gray-200 flex flex-col shrink-0 shadow-[4px_0_24px_rgba(0,0,0,0.02)] z-10 overflow-y-auto">
+                        <div className="p-4 border-b border-gray-100">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Forensic Parameters</h3>
+                            <div className="space-y-4">
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-gray-600">Base Rate (Grade 16)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-2 top-1.5 text-gray-400 text-xs">$</span>
+                                        <input 
+                                            type="number" 
+                                            value={isNaN(config.baseRate) ? '' : config.baseRate}
+                                            onChange={e => setConfig({...config, baseRate: parseFloat(e.target.value)})}
+                                            className="w-full pl-5 pr-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm font-mono focus:border-blue-500 focus:outline-none"
+                                        />
+                                    </div>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-gray-600">Base Shift Diff (Permanent)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-2 top-1.5 text-gray-400 text-xs">$</span>
+                                        <input 
+                                            type="number" 
+                                            value={isNaN(config.baseShiftDiff) ? '' : config.baseShiftDiff}
+                                            onChange={e => setConfig({...config, baseShiftDiff: parseFloat(e.target.value)})}
+                                            className="w-full pl-5 pr-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm font-mono focus:border-blue-500 focus:outline-none"
+                                        />
+                                    </div>
+                                    <p className="text-[9px] text-gray-400">Regular diff included in Base (e.g. Night)</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <label className="text-xs font-semibold text-gray-600">OT Multiplier</label>
+                                    <input 
+                                        type="number" 
+                                        value={isNaN(config.multiplier) ? '' : config.multiplier}
+                                        onChange={e => setConfig({...config, multiplier: parseFloat(e.target.value)})}
+                                        className="w-full px-2 py-1 bg-gray-50 border border-gray-200 rounded text-sm font-mono focus:border-blue-500 focus:outline-none"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="p-4 border-b border-gray-100">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4">Diff Stacking (Earned)</h3>
+                            <div className="space-y-3">
+                                {[
+                                    { label: 'Evening', key: 'eveningDiff', color: 'text-blue-600' },
+                                    { label: 'Night', key: 'nightDiff', color: 'text-indigo-600' },
+                                    { label: 'Weekend', key: 'weekendDiff', color: 'text-purple-600' },
+                                ].map(item => (
+                                    <div key={item.key} className="flex justify-between items-center">
+                                        <span className={`text-xs font-medium ${item.color}`}>{item.label}</span>
+                                        <div className="relative w-20">
+                                            <span className="absolute left-2 top-1 text-gray-400 text-[10px]">$</span>
+                                            <input 
+                                                type="number" 
+                                                value={isNaN(config[item.key]) ? '' : config[item.key]}
+                                                onChange={e => setConfig({...config, [item.key]: parseFloat(e.target.value)})}
+                                                className="w-full pl-4 pr-1 py-0.5 text-right bg-gray-50 border border-gray-200 rounded text-xs font-mono"
+                                            />
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* REMUNERATION ADDERS */}
+                        <div className="p-4 border-b border-gray-100 bg-orange-50/50">
+                            <h3 className="text-xs font-bold text-orange-600 uppercase tracking-wider mb-4 flex items-center gap-1">
+                                <Icon name="alert" size={12} />
+                                Addt'l Remuneration
+                            </h3>
+                            <div className="space-y-4">
+                                
+                                {/* Wellness Toggle */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="text-xs font-medium text-gray-700">Wellness Stipend</label>
+                                        <div className="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox" id="wellness-toggle" 
+                                                checked={config.includeWellness}
+                                                onChange={(e) => setConfig({...config, includeWellness: e.target.checked})}
+                                                className="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300"/>
+                                            <label htmlFor="wellness-toggle" className={`toggle-label block overflow-hidden h-4 rounded-full cursor-pointer ${config.includeWellness ? 'bg-green-400' : 'bg-gray-300'}`}></label>
+                                        </div>
+                                    </div>
+                                    {config.includeWellness && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500">Hrly Equiv:</span>
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-1 top-0.5 text-gray-400 text-[10px]">$</span>
+                                                <input type="number" value={isNaN(config.wellnessRate) ? '' : config.wellnessRate} onChange={e => setConfig({...config, wellnessRate: parseFloat(e.target.value)})} className="w-full pl-3 pr-1 py-0.5 text-right bg-white border border-gray-200 rounded text-[10px] font-mono"/>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Incident Pay Toggle */}
+                                <div>
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="text-xs font-medium text-gray-700">Incident Enf. Pay</label>
+                                        <div className="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox" id="incident-toggle" 
+                                                checked={config.includeIncident}
+                                                onChange={(e) => setConfig({...config, includeIncident: e.target.checked})}
+                                                className="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300"/>
+                                            <label htmlFor="incident-toggle" className={`toggle-label block overflow-hidden h-4 rounded-full cursor-pointer ${config.includeIncident ? 'bg-green-400' : 'bg-gray-300'}`}></label>
+                                        </div>
+                                    </div>
+                                    {config.includeIncident && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500">Hrly Equiv:</span>
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-1 top-0.5 text-gray-400 text-[10px]">$</span>
+                                                <input type="number" value={isNaN(config.incidentRate) ? '' : config.incidentRate} onChange={e => setConfig({...config, incidentRate: parseFloat(e.target.value)})} className="w-full pl-3 pr-1 py-0.5 text-right bg-white border border-gray-200 rounded text-[10px] font-mono"/>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* On-Call Pay Toggle */}
+                                <div className="pt-2 border-t border-orange-100">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="text-xs font-medium text-gray-700">On-Call Pay ($2080/yr)</label>
+                                        <div className="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox" id="oncall-toggle" 
+                                                checked={config.includeOnCall}
+                                                onChange={(e) => setConfig({...config, includeOnCall: e.target.checked})}
+                                                className="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300"/>
+                                            <label htmlFor="oncall-toggle" className={`toggle-label block overflow-hidden h-4 rounded-full cursor-pointer ${config.includeOnCall ? 'bg-green-400' : 'bg-gray-300'}`}></label>
+                                        </div>
+                                    </div>
+                                    {config.includeOnCall && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500">Annual:</span>
+                                            <div className="relative flex-1">
+                                                <span className="absolute left-1 top-0.5 text-gray-400 text-[10px]">$</span>
+                                                <input type="number" value={isNaN(config.onCallAnnual) ? '' : config.onCallAnnual} onChange={e => setConfig({...config, onCallAnnual: parseFloat(e.target.value)})} className="w-full pl-3 pr-1 py-0.5 text-right bg-white border border-gray-200 rounded text-[10px] font-mono"/>
+                                            </div>
+                                            <span className="text-[10px] font-bold text-orange-600">
+                                                +${isNaN(config.onCallAnnual) ? "0.00" : (config.onCallAnnual/2080).toFixed(2)}/hr
+                                            </span>
+                                        </div>
+                                    )}
+                                </div>
+
+                                 {/* NEW: DE Premium Toggle */}
+                                 <div className="pt-2 border-t border-orange-100">
+                                    <div className="flex items-center justify-between mb-1">
+                                        <label className="text-xs font-medium text-gray-700">Detail "DE" Premium</label>
+                                        <div className="relative inline-block w-8 mr-2 align-middle select-none transition duration-200 ease-in">
+                                            <input type="checkbox" id="depremium-toggle" 
+                                                checked={config.includeDEPremium}
+                                                onChange={(e) => setConfig({...config, includeDEPremium: e.target.checked})}
+                                                className="toggle-checkbox absolute block w-4 h-4 rounded-full bg-white border-4 appearance-none cursor-pointer border-gray-300"/>
+                                            <label htmlFor="depremium-toggle" className={`toggle-label block overflow-hidden h-4 rounded-full cursor-pointer ${config.includeDEPremium ? 'bg-green-400' : 'bg-gray-300'}`}></label>
+                                        </div>
+                                    </div>
+                                    {config.includeDEPremium && (
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-[10px] text-gray-500">Add %:</span>
+                                            <div className="relative flex-1">
+                                                <input type="number" value={isNaN(config.dePremiumPercent) ? '' : config.dePremiumPercent} onChange={e => setConfig({...config, dePremiumPercent: parseFloat(e.target.value)})} className="w-full px-2 py-0.5 text-right bg-white border border-gray-200 rounded text-[10px] font-mono"/>
+                                            </div>
+                                            <span className="text-[10px] text-gray-500">%</span>
+                                        </div>
+                                    )}
+                                    <p className="text-[9px] text-gray-400 leading-tight mt-1">
+                                        If Unit/Post contains "-DE", total rate increased by {config.dePremiumPercent}%.
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div className="mt-auto p-4 bg-gray-50 border-t border-gray-100">
+                             <div className="text-xs text-gray-500 mb-1">Rows Loaded</div>
+                             <div className="font-mono font-bold text-lg text-gray-800">{totals.count}</div>
+                             <p className="text-[10px] text-gray-400 mt-2 leading-snug">
+                                Rows are now grouped by Pay Period (Anchored to June 15, 2025).
+                             </p>
+                        </div>
+                    </div>
+
+                    {/* MAIN SPREADSHEET VIEW */}
+                    <div className="flex-1 overflow-auto bg-white custom-scroll relative">
+                        {/* Table Header Sticky */}
+                        <div className="min-w-max sticky top-0 z-20">
+                            <div className="bg-gray-100 border-b border-gray-300 flex text-xs font-bold text-gray-600 shadow-sm">
+                                <div className="cell-header w-24 bg-gray-100">Date</div>
+                                <div className="cell-header w-20 bg-gray-100">Day</div>
+                                <div className="cell-header w-20 bg-gray-100">Shift</div>
+                                <div className="cell-header w-32 bg-gray-100">Name</div>
+                                <div className="cell-header w-24 bg-gray-100">Rank</div>
+                                <div className="cell-header w-16 bg-gray-100 text-center">Start</div>
+                                <div className="cell-header w-16 bg-gray-100 text-center">End</div>
+                                <div className="cell-header w-16 bg-gray-200 text-right font-black text-gray-800 border-l border-gray-300">Hours</div>
+                                <div className="cell-header w-32 bg-purple-50 text-purple-900 border-l border-purple-200">Shift Diffs</div>
+                                <div className="cell-header w-24 bg-gray-100">Duty</div>
+                                <div className="cell-header w-48 bg-yellow-50 text-gray-700 border-l border-yellow-200">Unit (Detail Desc)</div>
+                                <div className="cell-header w-24 bg-blue-50 text-right text-blue-800">Mgmt Pay</div>
+                                <div className="cell-header w-24 bg-green-50 text-right text-green-800">Correct Pay</div>
+                                <div className="cell-header w-24 bg-red-50 text-right text-red-800 font-black">Variance</div>
+                            </div>
+                        </div>
+
+                        {/* Table Body with Groups */}
+                        <div className="min-w-max">
+                            {Object.keys(groupedData).map(period => (
+                                <div key={period}>
+                                    <div className="pay-period-header sticky top-[33px] z-10 shadow-sm flex justify-between">
+                                        <span>PAY PERIOD: {period}</span>
+                                        <span className="font-normal text-gray-500 text-[10px] self-center">
+                                            Subtotal Variance: ${groupedData[period].reduce((s,r) => s+r._loss, 0).toLocaleString('en-US', {minimumFractionDigits: 2})}
+                                        </span>
+                                    </div>
+                                    
+                                    {groupedData[period].map((row) => (
+                                        <div key={row._id} className="flex text-xs text-gray-700 audit-row border-b border-gray-100">
+                                            <div className="cell-base w-24 font-medium">{row._formattedDate}</div>
+                                            <div className="cell-base w-20 text-gray-500">{row.Weekday || row.Day || row.day}</div>
+                                            <div className="cell-base w-20">{row.Shift || row.shift}</div>
+                                            <div className="cell-base w-32 truncate" title={row.Name}>{row.Name || row.name}</div>
+                                            <div className="cell-base w-24 truncate">{row.Rank || row.rank}</div>
+                                            <div className="cell-base w-16 text-center font-mono">{row._formattedStart}</div>
+                                            <div className="cell-base w-16 text-center font-mono">{row._formattedEnd}</div>
+                                            <div className="cell-base w-16 text-right font-mono font-bold bg-gray-50 border-l border-gray-200">
+                                                {row._hours.toFixed(2)}
+                                            </div>
+                                            <div className="cell-base w-32 bg-purple-50/30 text-purple-800 font-medium border-l border-purple-100">
+                                                {row._visualDiffs}
+                                            </div>
+                                            <div className="cell-base w-24 truncate">{row.Duty}</div>
+                                            
+                                            <div className="cell-base w-48 truncate text-gray-600 bg-yellow-50/30 border-l border-yellow-100 font-medium" title={row.Unit}>
+                                                {row.Unit}
+                                            </div>
+
+                                            <div className="cell-base w-24 text-right font-mono text-gray-400 bg-blue-50/10">
+                                                ${isNaN(row._mgmtTotal) ? "0.00" : row._mgmtTotal.toFixed(2)}
+                                            </div>
+                                            <div className="cell-base w-24 text-right font-mono text-green-700 bg-green-50/30">
+                                                ${isNaN(row._unionTotal) ? "0.00" : row._unionTotal.toFixed(2)}
+                                            </div>
+                                            <div className={`cell-base w-24 text-right font-mono font-bold bg-red-50/50 ${row._loss > 0.01 ? 'text-red-600' : 'text-gray-300'}`}>
+                                                {row._loss > 0.01 ? `+$${row._loss.toFixed(2)}` : '-'}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+
+</script>
+
+</body>
+</html>
