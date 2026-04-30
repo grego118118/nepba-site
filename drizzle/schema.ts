@@ -1,5 +1,11 @@
-import { pgTable, foreignKey, unique, uuid, text, timestamp, boolean, uniqueIndex, bigserial, integer, primaryKey } from "drizzle-orm/pg-core"
+import { pgTable, foreignKey, unique, uuid, text, timestamp, boolean, uniqueIndex, bigserial, integer, primaryKey, customType } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
+
+const bytea = customType<{ data: Buffer }>({
+	dataType() {
+		return "bytea";
+	},
+});
 
 
 
@@ -83,7 +89,7 @@ export const grievances = pgTable("grievances", {
 	documentType: text("document_type"),
 	documentSize: integer("document_size"),
 	// TODO: failed to parse database type 'bytea'
-	documentData: unknown("document_data"),
+	documentData: bytea("document_data"),
 }, (table) => [
 	foreignKey({
 			columns: [table.userId],
