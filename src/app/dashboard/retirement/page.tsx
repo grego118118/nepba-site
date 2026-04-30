@@ -19,14 +19,23 @@ export default async function RetirementPage() {
 	// Get user ID and profile data
 	let userId = "";
 	let targetRetirementDateIso: string | null = null;
+	let initialGroup: string | null = null;
+	let initialHireDateIso: string | null = null;
+	let initialAverageSalary: number | null = null;
 	if (session.user.email) {
 		const userWithProfile = await db.query.users.findFirst({
 			where: eq(users.email, session.user.email),
 			with: { profile: true },
 		});
 		userId = userWithProfile?.id ?? "";
-		const target = userWithProfile?.profile?.targetRetirementDate ?? null;
+		const profile = userWithProfile?.profile ?? null;
+		const target = profile?.targetRetirementDate ?? null;
 		targetRetirementDateIso = target ? target.toISOString() : null;
+		initialGroup = profile?.retirementGroup ?? null;
+		initialHireDateIso = profile?.hireDate
+			? profile.hireDate.toISOString()
+			: null;
+		initialAverageSalary = profile?.averageSalary ?? null;
 	}
 
   return (
@@ -178,9 +187,16 @@ export default async function RetirementPage() {
                   can affect your pension under Massachusetts law. Use the
                   calculator below for rough planning only.
                 </p>
-                <p className="mt-2 text-[11px] text-amber-300">
-                  Coming soon: the portal will be able to pre-fill details using
-                  information you share with Local 190.
+                <p className="mt-2 text-[11px] text-slate-500">
+                  Set your retirement group, hire date, and average salary on
+                  the{" "}
+                  <Link
+                    href="/dashboard/profile"
+                    className="text-blue-300 hover:text-blue-200"
+                  >
+                    profile page
+                  </Link>{" "}
+                  and they&apos;ll pre-fill here automatically.
                 </p>
               </div>
               <div
@@ -188,7 +204,12 @@ export default async function RetirementPage() {
                 aria-label="Interactive Massachusetts pension calculator"
                 className="mt-1 flex justify-center"
               >
-                <RetirementCalculatorEmbed />
+                <RetirementCalculatorEmbed
+                  initialGroup={initialGroup as "1" | "2" | "4" | null}
+                  initialHireDateIso={initialHireDateIso}
+                  initialAverageSalary={initialAverageSalary}
+                  initialTargetRetirementDateIso={targetRetirementDateIso}
+                />
               </div>
             </div>
           </article>

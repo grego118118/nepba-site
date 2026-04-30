@@ -10,6 +10,9 @@ interface SaveProfileInput {
     firstName: string;
     lastName: string;
     badgeNumber: string;
+    retirementGroup: string | null;
+    hireDate: string | null;
+    averageSalary: number | null;
 }
 
 interface SaveProfileResult {
@@ -19,16 +22,26 @@ interface SaveProfileResult {
     data?: any;
 }
 
+const ALLOWED_GROUPS = new Set(["1", "2", "4"]);
+
 export async function saveProfile(
     input: SaveProfileInput
 ): Promise<SaveProfileResult> {
-    const { userId, userEmail, firstName, lastName, badgeNumber } = input;
+    const {
+        userId,
+        userEmail,
+        firstName,
+        lastName,
+        badgeNumber,
+        retirementGroup,
+        hireDate,
+        averageSalary,
+    } = input;
 
     if (!userId || !userEmail) {
         return { success: false, error: "Missing authentication" };
     }
 
-    // Verify user
     const user = await db.query.users.findFirst({
         where: eq(users.id, userId),
     });
@@ -36,6 +49,26 @@ export async function saveProfile(
     if (!user || user.email !== userEmail) {
         return { success: false, error: "Unauthorized" };
     }
+
+    const normalizedGroup =
+        retirementGroup && ALLOWED_GROUPS.has(retirementGroup)
+            ? retirementGroup
+            : null;
+
+    let normalizedHireDate: Date | null = null;
+    if (hireDate) {
+        const parsed = new Date(hireDate);
+        if (!Number.isNaN(parsed.getTime())) {
+            normalizedHireDate = parsed;
+        }
+    }
+
+    const normalizedSalary =
+        typeof averageSalary === "number" &&
+        Number.isFinite(averageSalary) &&
+        averageSalary >= 0
+            ? Math.round(averageSalary)
+            : null;
 
     const existingProfile = await db.query.profiles.findFirst({
         where: eq(profiles.userId, userId),
@@ -50,6 +83,9 @@ export async function saveProfile(
                 firstName: firstName || "Member",
                 lastName: lastName || "190",
                 badgeNumber: badgeNumber || null,
+                retirementGroup: normalizedGroup,
+                hireDate: normalizedHireDate,
+                averageSalary: normalizedSalary,
             })
             .returning();
         result = created;
@@ -60,6 +96,9 @@ export async function saveProfile(
                 firstName,
                 lastName,
                 badgeNumber: badgeNumber || null,
+                retirementGroup: normalizedGroup,
+                hireDate: normalizedHireDate,
+                averageSalary: normalizedSalary,
                 updatedAt: new Date(),
             })
             .where(eq(profiles.id, existingProfile.id))
@@ -69,6 +108,7 @@ export async function saveProfile(
 
     revalidatePath("/dashboard/profile");
     revalidatePath("/dashboard");
+    revalidatePath("/dashboard/retirement");
 
     return { success: true, data: result };
 }

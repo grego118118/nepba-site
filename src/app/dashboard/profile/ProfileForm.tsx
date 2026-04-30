@@ -11,6 +11,9 @@ interface ProfileFormProps {
         firstName: string;
         lastName: string;
         badgeNumber: string | null;
+        retirementGroup: string | null;
+        hireDate: string | null;
+        averageSalary: number | null;
     };
 }
 
@@ -19,6 +22,13 @@ export function ProfileForm({ userId, userEmail, initialData }: ProfileFormProps
     const [firstName, setFirstName] = useState(initialData.firstName);
     const [lastName, setLastName] = useState(initialData.lastName);
     const [badgeNumber, setBadgeNumber] = useState(initialData.badgeNumber ?? "");
+    const [retirementGroup, setRetirementGroup] = useState(
+        initialData.retirementGroup ?? "2",
+    );
+    const [hireDate, setHireDate] = useState(initialData.hireDate ?? "");
+    const [averageSalary, setAverageSalary] = useState<string>(
+        initialData.averageSalary != null ? String(initialData.averageSalary) : "",
+    );
     const [status, setStatus] = useState<"idle" | "saving" | "success" | "error">("idle");
     const [errorMessage, setErrorMessage] = useState("");
 
@@ -28,12 +38,21 @@ export function ProfileForm({ userId, userEmail, initialData }: ProfileFormProps
         setErrorMessage("");
 
         try {
+            const parsedSalary = averageSalary.trim() === ""
+                ? null
+                : Number(averageSalary);
             const result = await saveProfile({
                 userId,
                 userEmail,
                 firstName,
                 lastName,
                 badgeNumber,
+                retirementGroup: retirementGroup || null,
+                hireDate: hireDate || null,
+                averageSalary:
+                    parsedSalary != null && Number.isFinite(parsedSalary)
+                        ? parsedSalary
+                        : null,
             });
 
             if (result.success) {
@@ -59,7 +78,8 @@ export function ProfileForm({ userId, userEmail, initialData }: ProfileFormProps
             <div className="space-y-1">
                 <h2 className="text-lg font-semibold text-slate-50">Details</h2>
                 <p className="text-sm text-slate-400">
-                    Update your personal information and badge number.
+                    Personal info plus the retirement details that pre-fill your
+                    pension estimator.
                 </p>
             </div>
 
@@ -104,6 +124,57 @@ export function ProfileForm({ userId, userEmail, initialData }: ProfileFormProps
                         onChange={(e) => setBadgeNumber(e.target.value)}
                         placeholder="e.g. 1234"
                     />
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="retirementGroup" className="text-xs font-semibold uppercase text-slate-500">
+                        Retirement Group
+                    </label>
+                    <select
+                        id="retirementGroup"
+                        className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={retirementGroup}
+                        onChange={(e) => setRetirementGroup(e.target.value)}
+                    >
+                        <option value="1">Group 1 — General</option>
+                        <option value="2">Group 2 — Hazardous (Local 190)</option>
+                        <option value="4">Group 4 — Police / Fire / Corrections</option>
+                    </select>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="hireDate" className="text-xs font-semibold uppercase text-slate-500">
+                        Hire Date
+                    </label>
+                    <input
+                        id="hireDate"
+                        type="date"
+                        className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={hireDate}
+                        onChange={(e) => setHireDate(e.target.value)}
+                    />
+                    <p className="text-[11px] text-slate-500">
+                        Used to determine the pre- or post-Apr 2, 2012 pension formula.
+                    </p>
+                </div>
+
+                <div className="space-y-2">
+                    <label htmlFor="averageSalary" className="text-xs font-semibold uppercase text-slate-500">
+                        Average salary (optional)
+                    </label>
+                    <input
+                        id="averageSalary"
+                        type="number"
+                        min={0}
+                        step={1000}
+                        className="w-full rounded-md border border-slate-700 bg-slate-900 px-3 py-2 text-sm text-slate-100 placeholder-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        value={averageSalary}
+                        onChange={(e) => setAverageSalary(e.target.value)}
+                        placeholder="e.g. 95000"
+                    />
+                    <p className="text-[11px] text-slate-500">
+                        Average of your highest 3 (pre-2012) or 5 (post-2012) consecutive years.
+                    </p>
                 </div>
             </div>
 

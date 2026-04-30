@@ -44,6 +44,9 @@ export const profiles = pgTable("profiles", {
   targetRetirementDate: timestamp("target_retirement_date", {
     withTimezone: true,
   }),
+  retirementGroup: text("retirement_group"),
+  hireDate: timestamp("hire_date", { withTimezone: true }),
+  averageSalary: integer("average_salary"),
   isAdmin: boolean("is_admin").notNull().default(false),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow(),
   updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow(),

@@ -20,6 +20,9 @@ export default async function ProfilePage() {
         firstName: "",
         lastName: "",
         badgeNumber: null as string | null,
+        retirementGroup: null as string | null,
+        hireDate: null as string | null,
+        averageSalary: null as number | null,
     };
 
     if (session.user.email) {
@@ -31,10 +34,14 @@ export default async function ProfilePage() {
         if (userWithProfile) {
             userId = userWithProfile.id;
             if (userWithProfile.profile) {
+                const hire = userWithProfile.profile.hireDate;
                 profileData = {
                     firstName: userWithProfile.profile.firstName,
                     lastName: userWithProfile.profile.lastName,
                     badgeNumber: userWithProfile.profile.badgeNumber,
+                    retirementGroup: userWithProfile.profile.retirementGroup,
+                    hireDate: hire ? hire.toISOString().slice(0, 10) : null,
+                    averageSalary: userWithProfile.profile.averageSalary,
                 };
             } else {
                 // Defaults if no profile exists yet
