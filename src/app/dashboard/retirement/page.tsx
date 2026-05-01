@@ -123,6 +123,165 @@ export default async function RetirementPage() {
           </article>
 
           <article
+            aria-labelledby="reform-2012-heading"
+            className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 shadow-sm md:col-span-2"
+          >
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-amber-500/20 bg-amber-500/10 text-amber-400">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <h2 id="reform-2012-heading" className="text-sm font-semibold text-slate-50">
+                What changed on April 2, 2012?
+              </h2>
+            </div>
+            <p className="mb-4 text-xs leading-relaxed text-slate-400">
+              Massachusetts pension reform (Chapter 176 of the Acts of 2011) tightened
+              eligibility and benefits for members hired on or after April 2, 2012.
+              Members already in service before that date kept the older, more
+              favorable rules. Your hire date determines which set applies — the
+              calculator above asks for it because it materially changes your
+              estimate.
+            </p>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-emerald-300">
+                  Hired before Apr 2, 2012
+                </p>
+                <ul className="space-y-1.5 text-[11px] text-slate-300">
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Salary average</span>
+                    <span className="font-mono text-slate-200">Highest 3 yrs</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Vesting</span>
+                    <span className="font-mono text-slate-200">10 yrs</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">General eligibility</span>
+                    <span className="font-mono text-slate-200">20+ YOS any age, or 55 + 10 YOS</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Age factor schedule</span>
+                    <span className="font-mono text-slate-200">Single linear table</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Anti-spiking rule</span>
+                    <span className="font-mono text-slate-200">None</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
+                <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-amber-300">
+                  Hired on / after Apr 2, 2012
+                </p>
+                <ul className="space-y-1.5 text-[11px] text-slate-300">
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Salary average</span>
+                    <span className="font-mono text-slate-200">Highest 5 yrs</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Vesting</span>
+                    <span className="font-mono text-slate-200">10 yrs (required)</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">General eligibility</span>
+                    <span className="font-mono text-slate-200">Group min age + 10 YOS</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Age factor schedule</span>
+                    <span className="font-mono text-slate-200">Reduced if &lt;30 YOS</span>
+                  </li>
+                  <li className="flex justify-between gap-2">
+                    <span className="text-slate-500">Anti-spiking rule</span>
+                    <span className="font-mono text-slate-200">10% / 7% caps</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div className="mt-4 overflow-x-auto rounded-lg border border-slate-800">
+              <table className="w-full min-w-[34rem] text-[11px]">
+                <thead className="bg-slate-900/60 text-left text-[10px] uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-3 py-2 font-semibold">Group</th>
+                    <th className="px-3 py-2 font-semibold">Pre-2012 minimum</th>
+                    <th className="px-3 py-2 font-semibold">Post-2012 minimum</th>
+                    <th className="px-3 py-2 font-semibold">What it means</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                  <tr>
+                    <td className="px-3 py-2 font-semibold text-slate-100">Group 1<br /><span className="text-[10px] font-normal text-slate-500">General employees</span></td>
+                    <td className="px-3 py-2 font-mono">Age 55 + 10 YOS<br /><span className="text-slate-500">or 20+ YOS any age</span></td>
+                    <td className="px-3 py-2 font-mono text-amber-300">Age 60 + 10 YOS</td>
+                    <td className="px-3 py-2 text-slate-400">Must work 5 more years to start collecting.</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-semibold text-slate-100">Group 2<br /><span className="text-[10px] font-normal text-slate-500">Hazardous (Local 190)</span></td>
+                    <td className="px-3 py-2 font-mono">Age 55 + 10 YOS<br /><span className="text-slate-500">or 20+ YOS any age</span></td>
+                    <td className="px-3 py-2 font-mono">Age 55 + 10 YOS</td>
+                    <td className="px-3 py-2 text-slate-400">Min age unchanged, but 5-yr salary avg + reduced &lt;30 YOS factors lower the benefit.</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-semibold text-slate-100">Group 3<br /><span className="text-[10px] font-normal text-slate-500">State Police</span></td>
+                    <td className="px-3 py-2 font-mono">Age 55 + 10 YOS<br /><span className="text-slate-500">or 20+ YOS any age</span></td>
+                    <td className="px-3 py-2 font-mono text-amber-300">Age 55 + 10 YOS</td>
+                    <td className="px-3 py-2 text-slate-400">Loses the &quot;retire at any age with 20 yrs&quot; option for new hires.</td>
+                  </tr>
+                  <tr>
+                    <td className="px-3 py-2 font-semibold text-slate-100">Group 4<br /><span className="text-[10px] font-normal text-slate-500">Police / Fire / Corrections</span></td>
+                    <td className="px-3 py-2 font-mono">Age 45 + 20 YOS<br /><span className="text-slate-500">or 55 + 10 YOS</span></td>
+                    <td className="px-3 py-2 font-mono text-amber-300">Age 50 + 10 YOS</td>
+                    <td className="px-3 py-2 text-slate-400">Earliest retirement age moves up by 5 years; 10 YOS now required.</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-3 grid gap-2 text-[11px] text-slate-400 sm:grid-cols-3">
+              <div className="rounded-md border border-slate-800 bg-slate-900/40 px-3 py-2">
+                <p className="font-semibold text-slate-200">3 vs. 5 yr salary average</p>
+                <p className="mt-0.5 text-slate-500">
+                  Spreading over 5 years usually drags the average down, since
+                  raises typically come late-career.
+                </p>
+              </div>
+              <div className="rounded-md border border-slate-800 bg-slate-900/40 px-3 py-2">
+                <p className="font-semibold text-slate-200">Reduced age factor &lt;30 YOS</p>
+                <p className="mt-0.5 text-slate-500">
+                  Post-2012 hires with under 30 years of service start at 1.45%
+                  per year, not 1.5–2.0%, and grow more slowly.
+                </p>
+              </div>
+              <div className="rounded-md border border-slate-800 bg-slate-900/40 px-3 py-2">
+                <p className="font-semibold text-slate-200">Anti-spiking caps</p>
+                <p className="mt-0.5 text-slate-500">
+                  Salary growth in years used for the average is limited so a
+                  late promotion can&apos;t artificially inflate the pension.
+                </p>
+              </div>
+            </div>
+
+            <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
+              Source: Chapter 176 of the Acts of 2011; M.G.L. c. 32 §§ 5, 7, 22.
+              Confirm specifics with the{" "}
+              <a
+                href="https://www.mass.gov/orgs/massachusetts-state-retirement-board"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200"
+              >
+                Massachusetts State Retirement Board
+              </a>
+              .
+            </p>
+          </article>
+
+          <article
             aria-labelledby="retirement-benefits-heading"
             className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 shadow-sm md:col-span-2"
           >
