@@ -169,9 +169,12 @@ export default async function RetirementPage() {
                   </li>
                   <li className="flex justify-between gap-2">
                     <span className="text-slate-500">Anti-spiking rule</span>
-                    <span className="font-mono text-slate-200">None</span>
+                    <span className="font-mono text-slate-200">10% / 100% caps*</span>
                   </li>
                 </ul>
+                <p className="mt-1 text-[10px] text-slate-500">
+                  *Ch. 176 anti-spiking applies to all members, not just new hires.
+                </p>
               </div>
 
               <div className="rounded-lg border border-amber-500/20 bg-amber-500/5 p-3">
@@ -197,7 +200,7 @@ export default async function RetirementPage() {
                   </li>
                   <li className="flex justify-between gap-2">
                     <span className="text-slate-500">Anti-spiking rule</span>
-                    <span className="font-mono text-slate-200">10% / 7% caps</span>
+                    <span className="font-mono text-slate-200">10% / 100% caps</span>
                   </li>
                 </ul>
               </div>
@@ -228,9 +231,9 @@ export default async function RetirementPage() {
                   </tr>
                   <tr>
                     <td className="px-3 py-2 font-semibold text-slate-100">Group 3<br /><span className="text-[10px] font-normal text-slate-500">State Police</span></td>
-                    <td className="px-3 py-2 font-mono">Age 55 + 10 YOS<br /><span className="text-slate-500">or 20+ YOS any age</span></td>
-                    <td className="px-3 py-2 font-mono text-amber-300">Age 55 + 10 YOS</td>
-                    <td className="px-3 py-2 text-slate-400">Loses the &quot;retire at any age with 20 yrs&quot; option for new hires.</td>
+                    <td className="px-3 py-2 font-mono">20 YOS, any age<br /><span className="text-slate-500">60% of final salary; +3%/yr to 75% max</span></td>
+                    <td className="px-3 py-2 font-mono text-amber-300">20 YOS, any age<br /><span className="text-slate-500">50% of final salary at 20 yrs</span></td>
+                    <td className="px-3 py-2 text-slate-400">Same eligibility, but the benefit drops 10 percentage points (60% → 50%) for new hires.</td>
                   </tr>
                   <tr>
                     <td className="px-3 py-2 font-semibold text-slate-100">Group 4<br /><span className="text-[10px] font-normal text-slate-500">Police / Fire / Corrections</span></td>
@@ -260,15 +263,47 @@ export default async function RetirementPage() {
               <div className="rounded-md border border-slate-800 bg-slate-900/40 px-3 py-2">
                 <p className="font-semibold text-slate-200">Anti-spiking caps</p>
                 <p className="mt-0.5 text-slate-500">
-                  Salary growth in years used for the average is limited so a
-                  late promotion can&apos;t artificially inflate the pension.
+                  10% rule: any year exceeding 110% of the prior 2-yr average
+                  is trimmed. 100% rule: a 2-year doubling forces a 5-yr
+                  average. Applies to all members.
                 </p>
               </div>
             </div>
 
             <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
-              Source: Chapter 176 of the Acts of 2011; M.G.L. c. 32 §§ 5, 7, 22.
-              Confirm specifics with the{" "}
+              Source: Chapter 176 of the Acts of 2011; M.G.L. c. 32 §§ 5, 7,
+              22; MSRB&apos;s{" "}
+              <a
+                href="https://www.mass.gov/info-details/information-on-the-pension-reform-act-msrb"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200"
+              >
+                Pension Reform Act
+              </a>
+              ,{" "}
+              <a
+                href="https://www.mass.gov/info-details/eligibility-for-retirement"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200"
+              >
+                Eligibility for Retirement
+              </a>
+              , and{" "}
+              <a
+                href="https://www.mass.gov/info-details/group-classification-faqs-msrb"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-300 hover:text-blue-200"
+              >
+                Group Classification FAQs
+              </a>{" "}
+              pages. Group 3 (State Police) uses a flat-percentage formula at
+              20 YOS rather than the standard age-factor model — the
+              calculator above approximates this with a 2.5%/yr factor, which
+              matches post-2012 outcomes but understates pre-2012 benefits at
+              25–29 YOS. Confirm specifics with the{" "}
               <a
                 href="https://www.mass.gov/orgs/massachusetts-state-retirement-board"
                 target="_blank"
