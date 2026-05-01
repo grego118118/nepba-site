@@ -1,67 +1,40 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import {
+  calculateAnnualPension,
+  calculatePensionWithOption,
+  calculateVeteranBenefit,
+  checkEligibility,
+  getBenefitFactor,
+  MAX_PENSION_PERCENTAGE_OF_SALARY,
+} from "@/lib/pension-calculations";
 
-type Group = "1" | "2" | "4";
-type Era = "pre-2012" | "post-2012";
-
-const GROUP_MIN_AGE: Record<Group, Record<Era, number>> = {
-  "1": { "pre-2012": 55, "post-2012": 60 },
-  "2": { "pre-2012": 55, "post-2012": 55 },
-  "4": { "pre-2012": 45, "post-2012": 50 },
-};
-
-const PRE_2012_START_FACTOR: Record<Group, number> = {
-  "1": 0.015,
-  "2": 0.020,
-  "4": 0.015,
-};
-
-function getAgeFactor(
-  group: Group,
-  era: Era,
-  age: number,
-  years: number,
-): number | null {
-  const minAge = GROUP_MIN_AGE[group][era];
-  if (age < minAge) return null;
-
-  if (era === "pre-2012") {
-    const offset = age - minAge;
-    const factor = PRE_2012_START_FACTOR[group] + offset * 0.001;
-    return Math.min(factor, 0.025);
-  }
-
-  const offset = age - minAge;
-  if (years >= 30) {
-    return Math.min(0.020 + offset * 0.001, 0.025);
-  }
-  return Math.min(0.0145 + offset * 0.0015, 0.025);
-}
-
-function formatCurrency(n: number): string {
-  return n.toLocaleString("en-US", {
-    style: "currency",
-    currency: "USD",
-    maximumFractionDigits: 0,
-  });
-}
+type Group = "1" | "2" | "3" | "4";
+type Era = "before_2012" | "after_2012";
+type Option = "A" | "B" | "C";
 
 const APRIL_2_2012 = new Date("2012-04-02T00:00:00Z").getTime();
+
+const GROUP_LABEL: Record<Group, string> = {
+  "1": "Group 1 — General",
+  "2": "Group 2 — Hazardous",
+  "3": "Group 3 — State Police",
+  "4": "Group 4 — Police / Fire",
+};
 
 interface RetirementCalculatorEmbedProps {
   initialGroup?: Group | null;
   initialHireDateIso?: string | null;
   initialAverageSalary?: number | null;
   initialTargetRetirementDateIso?: string | null;
-  initialBirthDateIso?: string | null;
 }
 
 function eraFromHireDate(iso: string | null | undefined): Era | null {
   if (!iso) return null;
   const t = new Date(iso).getTime();
   if (Number.isNaN(t)) return null;
-  return t < APRIL_2_2012 ? "pre-2012" : "post-2012";
+  return t < APRIL_2_2012 ? "before_2012" : "after_2012";
 }
 
 function yearsBetween(startIso: string, endIso: string): number {
@@ -83,6 +56,14 @@ function yearsBetween(startIso: string, endIso: string): number {
   return Math.max(0, years);
 }
 
+function formatCurrency(n: number): string {
+  return n.toLocaleString("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  });
+}
+
 export function RetirementCalculatorEmbed({
   initialGroup,
   initialHireDateIso,
@@ -98,7 +79,7 @@ export function RetirementCalculatorEmbed({
   const [group, setGroup] = useState<Group>(
     (initialGroup as Group) ?? "2",
   );
-  const [era, setEra] = useState<Era>(inferredEra ?? "pre-2012");
+  const [era, setEra] = useState<Era>(inferredEra ?? "before_2012");
   const [age, setAge] = useState<number>(55);
   const [years, setYears] = useState<number>(
     inferredYears && inferredYears > 0 ? inferredYears : 25,
@@ -106,6 +87,9 @@ export function RetirementCalculatorEmbed({
   const [avgSalary, setAvgSalary] = useState<number>(
     initialAverageSalary ?? 95000,
   );
+  const [option, setOption] = useState<Option>("A");
+  const [beneficiaryAge, setBeneficiaryAge] = useState<string>("");
+  const [isVeteran, setIsVeteran] = useState<boolean>(false);
 
   const prefilled = !!(
     initialGroup ||
@@ -114,41 +98,77 @@ export function RetirementCalculatorEmbed({
   );
 
   const result = useMemo(() => {
-    const minAge = GROUP_MIN_AGE[group][era];
-    const factor = getAgeFactor(group, era, age, years);
-    const vested = years >= 10;
+    const groupKey = `GROUP_${group}` as
+      | "GROUP_1"
+      | "GROUP_2"
+      | "GROUP_3"
+      | "GROUP_4";
 
-    if (factor === null) {
+    const eligibility = checkEligibility(age, years, groupKey, era);
+    const factor = getBenefitFactor(age, groupKey, era, years);
+    const veteranBenefit = calculateVeteranBenefit(isVeteran, age, years);
+
+    if (!eligibility.eligible || factor === 0) {
       return {
         eligible: false,
-        vested,
-        minAge,
+        eligibilityMessage: eligibility.message,
         factor: 0,
-        annualUncapped: 0,
         annual: 0,
         monthly: 0,
+        baseAnnual: 0,
+        annualUncapped: 0,
         capped: false,
+        survivorAnnual: 0,
+        survivorMonthly: 0,
+        veteranBenefit: 0,
       };
     }
 
-    const annualUncapped = years * factor * avgSalary;
-    const cap = 0.8 * avgSalary;
+    const annualUncapped = avgSalary * years * factor;
+    const cap = avgSalary * MAX_PENSION_PERCENTAGE_OF_SALARY;
     const capped = annualUncapped > cap;
-    const annual = capped ? cap : annualUncapped;
+    const baseAnnual = capped ? cap : annualUncapped;
+
+    const totalAnnual = calculateAnnualPension(
+      avgSalary,
+      age,
+      years,
+      option,
+      groupKey,
+      era,
+      beneficiaryAge || undefined,
+      isVeteran,
+    );
+
+    let survivorAnnual = 0;
+    if (option === "C") {
+      const optionResult = calculatePensionWithOption(
+        baseAnnual + veteranBenefit,
+        "C",
+        age,
+        beneficiaryAge,
+        groupKey,
+      );
+      survivorAnnual = optionResult.survivorPension;
+    }
 
     return {
       eligible: true,
-      vested,
-      minAge,
+      eligibilityMessage: "",
       factor,
+      annual: totalAnnual,
+      monthly: totalAnnual / 12,
+      baseAnnual,
       annualUncapped,
-      annual,
-      monthly: annual / 12,
       capped,
+      survivorAnnual,
+      survivorMonthly: survivorAnnual / 12,
+      veteranBenefit,
     };
-  }, [group, era, age, years, avgSalary]);
+  }, [group, era, age, years, avgSalary, option, beneficiaryAge, isVeteran]);
 
-  const salaryAvgWindow = era === "post-2012" ? "5" : "3";
+  const replacementRate =
+    avgSalary > 0 ? (result.annual / avgSalary) * 100 : 0;
 
   return (
     <div className="w-full max-w-md rounded-lg border border-slate-800 bg-slate-950/80 p-4 shadow-md shadow-black/30 md:max-w-lg">
@@ -157,9 +177,11 @@ export function RetirementCalculatorEmbed({
           Massachusetts pension estimator
         </h3>
         <p className="mt-0.5 text-[11px] text-slate-400">
-          M.G.L. c. 32 formula — for rough planning only.
+          Uses MSRB-validated formulas (M.G.L. c. 32) — for planning only.
           {prefilled && (
-            <span className="ml-1 text-emerald-400">Pre-filled from your profile.</span>
+            <span className="ml-1 text-emerald-400">
+              Pre-filled from your profile.
+            </span>
           )}
         </p>
       </div>
@@ -175,9 +197,11 @@ export function RetirementCalculatorEmbed({
               onChange={(e) => setGroup(e.target.value as Group)}
               className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
             >
-              <option value="1">Group 1 — General</option>
-              <option value="2">Group 2 — Hazardous</option>
-              <option value="4">Group 4 — Police / Fire</option>
+              {(Object.keys(GROUP_LABEL) as Group[]).map((g) => (
+                <option key={g} value={g}>
+                  {GROUP_LABEL[g]}
+                </option>
+              ))}
             </select>
           </label>
 
@@ -190,8 +214,8 @@ export function RetirementCalculatorEmbed({
               onChange={(e) => setEra(e.target.value as Era)}
               className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
             >
-              <option value="pre-2012">Before Apr 2, 2012</option>
-              <option value="post-2012">On / after Apr 2, 2012</option>
+              <option value="before_2012">Before Apr 2, 2012</option>
+              <option value="after_2012">On / after Apr 2, 2012</option>
             </select>
           </label>
         </div>
@@ -228,7 +252,7 @@ export function RetirementCalculatorEmbed({
 
         <label className="block">
           <span className="text-[11px] font-medium text-slate-300">
-            Average salary — highest {salaryAvgWindow} consecutive years
+            Average salary — highest 3 consecutive years
           </span>
           <div className="mt-1 flex items-center rounded-md border border-slate-700 bg-slate-900 px-2 focus-within:border-blue-500">
             <span className="text-xs text-slate-500">$</span>
@@ -242,6 +266,50 @@ export function RetirementCalculatorEmbed({
             />
           </div>
         </label>
+
+        <div className="grid grid-cols-2 gap-2">
+          <label className="block">
+            <span className="text-[11px] font-medium text-slate-300">
+              Retirement option
+            </span>
+            <select
+              value={option}
+              onChange={(e) => setOption(e.target.value as Option)}
+              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+            >
+              <option value="A">A — Full Allowance (100%)</option>
+              <option value="B">B — Annuity Protection (~1% reduction)</option>
+              <option value="C">C — Joint &amp; Survivor (66.67%)</option>
+            </select>
+          </label>
+
+          {option === "C" && (
+            <label className="block">
+              <span className="text-[11px] font-medium text-slate-300">
+                Beneficiary age
+              </span>
+              <input
+                type="number"
+                min={18}
+                max={100}
+                value={beneficiaryAge}
+                onChange={(e) => setBeneficiaryAge(e.target.value)}
+                placeholder="e.g. 53"
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:outline-none"
+              />
+            </label>
+          )}
+        </div>
+
+        <label className="flex cursor-pointer items-center gap-2 text-[11px] font-medium text-slate-300">
+          <input
+            type="checkbox"
+            checked={isVeteran}
+            onChange={(e) => setIsVeteran(e.target.checked)}
+            className="h-3.5 w-3.5 rounded border-slate-700 bg-slate-900 text-blue-500 focus:ring-blue-500"
+          />
+          Veteran benefit ($15/yr × YOS, max $300, age 36+)
+        </label>
       </div>
 
       <div className="mt-4 rounded-md border border-slate-800 bg-slate-900/60 p-3">
@@ -251,11 +319,8 @@ export function RetirementCalculatorEmbed({
               Not yet eligible
             </p>
             <p className="text-[11px] text-slate-400">
-              Group {group} {era === "pre-2012" ? "pre-2012" : "post-2012"}{" "}
-              members can first draw an allowance at age {result.minAge}.
-              {!result.vested
-                ? " You also need at least 10 years of creditable service to vest."
-                : ""}
+              {result.eligibilityMessage ||
+                "Eligibility requirements not met for the selected group, age, service, and hire-date combination."}
             </p>
           </div>
         ) : (
@@ -276,6 +341,17 @@ export function RetirementCalculatorEmbed({
                 {formatCurrency(result.monthly)}
               </span>
             </div>
+            {option === "C" && result.survivorAnnual > 0 && (
+              <div className="flex items-baseline justify-between border-t border-slate-800 pt-2">
+                <span className="text-[11px] uppercase tracking-wide text-slate-400">
+                  Survivor (66.67%)
+                </span>
+                <span className="text-xs font-semibold text-slate-300">
+                  {formatCurrency(result.survivorAnnual)} / yr ·{" "}
+                  {formatCurrency(result.survivorMonthly)} / mo
+                </span>
+              </div>
+            )}
             <div className="flex items-baseline justify-between border-t border-slate-800 pt-2 text-[11px] text-slate-400">
               <span>Age factor</span>
               <span className="font-mono text-slate-300">
@@ -285,21 +361,21 @@ export function RetirementCalculatorEmbed({
             <div className="flex items-baseline justify-between text-[11px] text-slate-400">
               <span>Replacement rate</span>
               <span className="font-mono text-slate-300">
-                {avgSalary > 0
-                  ? `${((result.annual / avgSalary) * 100).toFixed(1)}%`
-                  : "—"}
+                {avgSalary > 0 ? `${replacementRate.toFixed(1)}%` : "—"}
               </span>
             </div>
+            {result.veteranBenefit > 0 && (
+              <div className="flex items-baseline justify-between text-[11px] text-emerald-300">
+                <span>Veteran benefit (added)</span>
+                <span className="font-mono">
+                  +{formatCurrency(result.veteranBenefit)} / yr
+                </span>
+              </div>
+            )}
             {result.capped && (
               <p className="rounded border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200">
                 Capped at the 80% statutory maximum. Uncapped formula would
                 yield {formatCurrency(result.annualUncapped)}.
-              </p>
-            )}
-            {!result.vested && (
-              <p className="rounded border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200">
-                Heads up: members typically need 10 years of creditable service
-                to vest.
               </p>
             )}
           </div>
@@ -307,10 +383,9 @@ export function RetirementCalculatorEmbed({
       </div>
 
       <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
-        Estimate only. Your actual allowance is determined by your retirement
-        board and may be adjusted by retirement option (A, B, or C),
-        buybacks, veteran status, and other statutory factors. Confirm with
-        your board before relying on these numbers.
+        Estimate only. Actual allowance is determined by your retirement board
+        and may be adjusted by buybacks, COLAs, and other statutory factors.
+        Confirm with your board before relying on these numbers.
       </p>
     </div>
   );

@@ -138,6 +138,7 @@ export function ProfileForm({ userId, userEmail, initialData }: ProfileFormProps
                     >
                         <option value="1">Group 1 — General</option>
                         <option value="2">Group 2 — Hazardous (Local 190)</option>
+                        <option value="3">Group 3 — State Police</option>
                         <option value="4">Group 4 — Police / Fire / Corrections</option>
                     </select>
                 </div>

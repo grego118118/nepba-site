@@ -205,7 +205,7 @@ export default async function RetirementPage() {
                 className="mt-1 flex justify-center"
               >
                 <RetirementCalculatorEmbed
-                  initialGroup={initialGroup as "1" | "2" | "4" | null}
+                  initialGroup={initialGroup as "1" | "2" | "3" | "4" | null}
                   initialHireDateIso={initialHireDateIso}
                   initialAverageSalary={initialAverageSalary}
                   initialTargetRetirementDateIso={targetRetirementDateIso}

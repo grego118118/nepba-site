@@ -22,7 +22,7 @@ interface SaveProfileResult {
     data?: any;
 }
 
-const ALLOWED_GROUPS = new Set(["1", "2", "4"]);
+const ALLOWED_GROUPS = new Set(["1", "2", "3", "4"]);
 
 export async function saveProfile(
     input: SaveProfileInput
