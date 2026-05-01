@@ -172,7 +172,7 @@ export default async function RetirementPage() {
 
           <article
             aria-labelledby="retirement-benefits-heading"
-            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm"
+            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm md:col-span-2"
           >
             <div className="space-y-6">
               <div>
