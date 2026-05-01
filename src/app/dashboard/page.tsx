@@ -69,92 +69,84 @@ export default async function DashboardPage() {
           </div>
         </header>
 
-        <section className="grid gap-6 md:grid-cols-3">
-          {/* Column 1: Core Union Functions */}
-          <div className="space-y-6">
-            <article className="premium-card p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 animate-slide-up delay-100 h-full flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400 border border-blue-500/20">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                </div>
-                <h2 className="text-base font-bold text-white">Grievances & Issues</h2>
-              </div>
+        {/* Hero countdown */}
+        <section className="animate-slide-up delay-100">
+          <RetirementCountdownCard targetRetirementDateIso={targetRetirementDateIso} />
+        </section>
 
-              <p className="text-sm text-slate-400 mb-6 flex-grow">
-                Start a new issue, document workplace concerns, and check status of ongoing grievances.
-              </p>
+        {/* Tool grid */}
+        <section className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <article className="group flex h-full flex-col rounded-xl border border-slate-800 bg-slate-950/60 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-blue-500/40 hover:shadow-lg animate-slide-up delay-150">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-blue-500/20 bg-blue-500/10 text-blue-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <h2 className="mb-1 text-base font-bold text-white">Grievances</h2>
+            <p className="mb-5 flex-grow text-sm leading-relaxed text-slate-400">
+              File a new issue, document workplace concerns, and track status.
+            </p>
+            <Link
+              href="/dashboard/grievances"
+              className="mt-auto inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-blue-900/20 transition-colors hover:bg-blue-500"
+            >
+              Open Portal
+            </Link>
+          </article>
 
-              <Link
-                href="/dashboard/grievances"
-                className="mt-auto w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-900/20 transition-all hover:bg-blue-500 hover:-translate-y-0.5"
-              >
-                Open Grievance Portal
-              </Link>
-            </article>
-          </div>
+          <article className="group flex h-full flex-col rounded-xl border border-slate-800 bg-slate-950/60 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-emerald-500/40 hover:shadow-lg animate-slide-up delay-200">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+            </div>
+            <h2 className="mb-1 text-base font-bold text-white">Benefits</h2>
+            <p className="mb-5 flex-grow text-sm leading-relaxed text-slate-400">
+              Dental, vision, life insurance details, forms, and contact info.
+            </p>
+            <Link
+              href="/dashboard/benefits"
+              className="mt-auto inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-900/20 transition-colors hover:bg-emerald-500"
+            >
+              View Benefits
+            </Link>
+          </article>
 
-          {/* Column 2: Benefits & Resources */}
-          <div className="space-y-6">
-            <article className="glass-card rounded-xl p-6 hover:border-slate-600/50 transition-all animate-slide-up delay-200 h-full flex flex-col">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400 border border-emerald-500/20">
-                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                  </svg>
-                </div>
-                <h2 className="text-base font-bold text-white">Benefits & Documents</h2>
-              </div>
+          <article className="group flex h-full flex-col rounded-xl border border-slate-800 bg-slate-950/60 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-sky-500/40 hover:shadow-lg animate-slide-up delay-250">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-sky-500/20 bg-sky-500/10 text-sky-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <h2 className="mb-1 text-base font-bold text-white">Retirement</h2>
+            <p className="mb-5 flex-grow text-sm leading-relaxed text-slate-400">
+              Pension estimator, year-by-year projection, and target date.
+            </p>
+            <Link
+              href="/dashboard/retirement"
+              className="mt-auto inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-sky-900/20 transition-colors hover:bg-sky-500"
+            >
+              Open Retirement Tools
+            </Link>
+          </article>
 
-              <p className="text-sm text-slate-400 mb-6 flex-grow">
-                Access your dental, vision, and life insurance benefits, download forms, and find contact information.
-              </p>
-
-              <Link
-                href="/dashboard/benefits"
-                className="mt-auto w-full inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-emerald-900/20 transition-all hover:bg-emerald-500 hover:-translate-y-0.5"
-              >
-                View Benefits
-              </Link>
-            </article>
-          </div>
-
-          {/* Column 3: Retirement & Audit */}
-          <div className="space-y-6 animate-slide-up delay-300">
-            <RetirementCountdownCard targetRetirementDateIso={targetRetirementDateIso} />
-
-            <article className="relative overflow-hidden rounded-xl border border-yellow-600/30 bg-gradient-to-br from-slate-900 to-yellow-950/20 p-5 shadow-lg group hover:border-yellow-500/50 transition-all duration-300">
-              <div className="absolute top-0 right-0 -mr-4 -mt-4 h-24 w-24 rounded-full bg-yellow-500/10 blur-xl group-hover:bg-yellow-500/20 transition-colors" />
-
-              <div className="relative z-10">
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="flex h-2 w-2">
-                    <span className="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-yellow-400 opacity-75"></span>
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"></span>
-                  </span>
-                  <h2 className="text-xs font-bold uppercase tracking-wider text-yellow-500">Forensic Audit Tool</h2>
-                </div>
-
-                <h3 className="text-lg font-bold text-white mb-2">My Paycheck Auditor</h3>
-
-                <p className="text-sm text-slate-300 mb-4">
-                  Analyze overtime, differentials, and FLSA compliance instantly.
-                </p>
-
-                <Link
-                  href="/dashboard/audit"
-                  className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-yellow-600 px-4 py-2 text-sm font-bold text-white shadow-sm transition-all hover:bg-yellow-500 hover:-translate-y-0.5 group-hover:shadow-yellow-900/20"
-                >
-                  <span>Launch Auditor</span>
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </Link>
-              </div>
-            </article>
-          </div>
-
+          <article className="group flex h-full flex-col rounded-xl border border-slate-800 bg-slate-950/60 p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:border-amber-500/40 hover:shadow-lg animate-slide-up delay-300">
+            <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-lg border border-amber-500/20 bg-amber-500/10 text-amber-400">
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
+            <h2 className="mb-1 text-base font-bold text-white">Paycheck Audit</h2>
+            <p className="mb-5 flex-grow text-sm leading-relaxed text-slate-400">
+              Verify overtime, differentials, and FLSA compliance.
+            </p>
+            <Link
+              href="/dashboard/audit"
+              className="mt-auto inline-flex items-center justify-center rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-amber-900/20 transition-colors hover:bg-amber-500"
+            >
+              Launch Auditor
+            </Link>
+          </article>
         </section>
       </div>
     </main>

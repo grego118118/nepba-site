@@ -130,12 +130,10 @@ function computeResult(input: CalcInput): CalcResult {
     return { ...seg, factor, portion };
   });
 
-  // Eligible if at least one segment's group satisfies the requirements
   const eligibilities = input.segments.map((seg) =>
     checkEligibility(input.age, totalYears, asGroupKey(seg.group), input.era),
   );
-  const eligibleEntry = eligibilities.find((e) => e.eligible);
-  const anyEligible = !!eligibleEntry;
+  const anyEligible = eligibilities.some((e) => e.eligible);
 
   if (!anyEligible || weightedUncapped <= 0) {
     return {
@@ -168,9 +166,6 @@ function computeResult(input: CalcInput): CalcResult {
   );
   const baseWithVet = weightedAfterCap + veteranBenefit;
 
-  // Option C reduction tables differ for GROUP_1 vs others. Use the last
-  // segment's group as the "primary" group (assumption: the position the
-  // member is retiring from).
   const primaryGroup = asGroupKey(
     input.segments[input.segments.length - 1].group,
   );
@@ -321,374 +316,381 @@ export function RetirementCalculatorEmbed({
   const isMultiGroup = segments.length > 1;
 
   return (
-    <div className="w-full rounded-lg border border-slate-800 bg-slate-950/80 p-4 shadow-md shadow-black/30">
-      <div className="mb-3">
-        <h3 className="text-sm font-semibold text-slate-50">
-          Massachusetts pension estimator
-        </h3>
-        <p className="mt-0.5 text-[11px] text-slate-400">
-          Uses MSRB-validated formulas (M.G.L. c. 32) — for planning only.
-          {prefilled && (
-            <span className="ml-1 text-emerald-400">
-              Pre-filled from your profile.
-            </span>
-          )}
-        </p>
-      </div>
-
-      <div className="space-y-3">
-        {/* Service segments */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-medium text-slate-300">
-              {isMultiGroup ? "Service segments" : "Group & years of service"}
-            </span>
-            {segments.length < 4 && (
-              <button
-                type="button"
-                onClick={addSegment}
-                className="text-[11px] font-medium text-blue-400 hover:text-blue-300"
-              >
-                + Add another group
-              </button>
-            )}
+    <div className="grid w-full gap-4 lg:grid-cols-2">
+      {/* Inputs */}
+      <div className="rounded-xl border border-slate-800 bg-slate-950/80 p-5 shadow-md shadow-black/30">
+        {prefilled && (
+          <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-300">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+            Pre-filled from your profile
           </div>
-          {segments.map((seg, idx) => (
-            <div key={idx} className="flex gap-2">
-              <select
-                value={seg.group}
-                onChange={(e) =>
-                  updateSegment(idx, { group: e.target.value as Group })
-                }
-                className="flex-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
-              >
-                {(Object.keys(GROUP_LABEL) as Group[]).map((g) => (
-                  <option key={g} value={g}>
-                    {GROUP_LABEL[g]}
-                  </option>
-                ))}
-              </select>
-              <div className="flex w-28 items-center rounded-md border border-slate-700 bg-slate-900 px-2 focus-within:border-blue-500">
-                <input
-                  type="number"
-                  min={0}
-                  max={50}
-                  value={seg.years}
-                  onChange={(e) =>
-                    updateSegment(idx, { years: Number(e.target.value) || 0 })
-                  }
-                  className="w-full bg-transparent py-1.5 text-xs text-slate-100 focus:outline-none"
-                />
-                <span className="text-[11px] text-slate-500">yrs</span>
-              </div>
-              {segments.length > 1 && (
+        )}
+
+        <div className="space-y-3">
+          {/* Service segments */}
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                {isMultiGroup ? "Service segments" : "Group & years of service"}
+              </span>
+              {segments.length < 4 && (
                 <button
                   type="button"
-                  onClick={() => removeSegment(idx)}
-                  className="rounded-md border border-slate-700 bg-slate-900 px-2 text-xs text-slate-400 hover:border-red-500/50 hover:text-red-300"
-                  aria-label="Remove segment"
+                  onClick={addSegment}
+                  className="rounded-md border border-blue-500/30 bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-300 hover:border-blue-400 hover:bg-blue-500/20"
                 >
-                  −
+                  + Add group
                 </button>
               )}
             </div>
-          ))}
-          {isMultiGroup && (
-            <p className="text-[10px] text-slate-500">
-              Total: {result.totalYears} yrs · Each segment uses its group&apos;s
-              age factor; the last segment receives projected years.
-            </p>
-          )}
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <label className="block">
-            <span className="text-[11px] font-medium text-slate-300">
-              Hire date
-            </span>
-            <select
-              value={era}
-              onChange={(e) => setEra(e.target.value as Era)}
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="before_2012">Before Apr 2, 2012</option>
-              <option value="after_2012">On / after Apr 2, 2012</option>
-            </select>
-          </label>
-
-          <label className="block">
-            <span className="text-[11px] font-medium text-slate-300">
-              Age at retirement
-            </span>
-            <input
-              type="number"
-              min={18}
-              max={80}
-              value={age}
-              onChange={(e) => setAge(Number(e.target.value) || 0)}
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
-            />
-          </label>
-        </div>
-
-        <label className="block">
-          <span className="text-[11px] font-medium text-slate-300">
-            Average salary — highest 3 consecutive years
-          </span>
-          <div className="mt-1 flex items-center rounded-md border border-slate-700 bg-slate-900 px-2 focus-within:border-blue-500">
-            <span className="text-xs text-slate-500">$</span>
-            <input
-              type="number"
-              min={0}
-              step={1000}
-              value={avgSalary}
-              onChange={(e) => setAvgSalary(Number(e.target.value) || 0)}
-              className="w-full bg-transparent px-1 py-1.5 text-xs text-slate-100 focus:outline-none"
-            />
+            {segments.map((seg, idx) => (
+              <div key={idx} className="flex gap-2">
+                <select
+                  value={seg.group}
+                  onChange={(e) =>
+                    updateSegment(idx, { group: e.target.value as Group })
+                  }
+                  className="flex-1 rounded-md border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+                >
+                  {(Object.keys(GROUP_LABEL) as Group[]).map((g) => (
+                    <option key={g} value={g}>
+                      {GROUP_LABEL[g]}
+                    </option>
+                  ))}
+                </select>
+                <div className="flex w-28 items-center rounded-md border border-slate-700 bg-slate-900 px-2 focus-within:border-blue-500">
+                  <input
+                    type="number"
+                    min={0}
+                    max={50}
+                    value={seg.years}
+                    onChange={(e) =>
+                      updateSegment(idx, { years: Number(e.target.value) || 0 })
+                    }
+                    className="w-full bg-transparent py-2 text-xs text-slate-100 focus:outline-none"
+                  />
+                  <span className="text-[10px] text-slate-500">yrs</span>
+                </div>
+                {segments.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeSegment(idx)}
+                    className="rounded-md border border-slate-700 bg-slate-900 px-2 text-sm text-slate-400 hover:border-red-500/50 hover:text-red-300"
+                    aria-label="Remove segment"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+            ))}
+            {isMultiGroup && (
+              <p className="text-[10px] text-slate-500">
+                Total {result.totalYears} yrs · Each segment uses its group&apos;s
+                age factor; the last segment receives projected years.
+              </p>
+            )}
           </div>
-        </label>
 
-        <div className="grid grid-cols-2 gap-2">
-          <label className="block">
-            <span className="text-[11px] font-medium text-slate-300">
-              Retirement option
-            </span>
-            <select
-              value={option}
-              onChange={(e) => setOption(e.target.value as Option)}
-              className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
-            >
-              <option value="A">A — Full Allowance (100%)</option>
-              <option value="B">B — Annuity Protection (~1% reduction)</option>
-              <option value="C">C — Joint &amp; Survivor (66.67%)</option>
-            </select>
-          </label>
-
-          {option === "C" && (
+          <div className="grid grid-cols-2 gap-2">
             <label className="block">
-              <span className="text-[11px] font-medium text-slate-300">
-                Beneficiary age
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Hire date
+              </span>
+              <select
+                value={era}
+                onChange={(e) => setEra(e.target.value as Era)}
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="before_2012">Before Apr 2, 2012</option>
+                <option value="after_2012">On / after Apr 2, 2012</option>
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Age at retirement
               </span>
               <input
                 type="number"
                 min={18}
-                max={100}
-                value={beneficiaryAge}
-                onChange={(e) => setBeneficiaryAge(e.target.value)}
-                placeholder="e.g. 53"
-                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-1.5 text-xs text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:outline-none"
+                max={80}
+                value={age}
+                onChange={(e) => setAge(Number(e.target.value) || 0)}
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
               />
             </label>
+          </div>
+
+          <label className="block">
+            <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+              Average salary — highest 3 consecutive years
+            </span>
+            <div className="mt-1 flex items-center rounded-md border border-slate-700 bg-slate-900 px-2 focus-within:border-blue-500">
+              <span className="text-xs text-slate-500">$</span>
+              <input
+                type="number"
+                min={0}
+                step={1000}
+                value={avgSalary}
+                onChange={(e) => setAvgSalary(Number(e.target.value) || 0)}
+                className="w-full bg-transparent px-1 py-2 text-xs text-slate-100 focus:outline-none"
+              />
+            </div>
+          </label>
+
+          <div className="grid grid-cols-2 gap-2">
+            <label className="block">
+              <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                Retirement option
+              </span>
+              <select
+                value={option}
+                onChange={(e) => setOption(e.target.value as Option)}
+                className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-slate-100 focus:border-blue-500 focus:outline-none"
+              >
+                <option value="A">A — Full Allowance (100%)</option>
+                <option value="B">B — Annuity Protection (~1%)</option>
+                <option value="C">C — Joint &amp; Survivor (66.67%)</option>
+              </select>
+            </label>
+
+            {option === "C" && (
+              <label className="block">
+                <span className="text-[11px] font-medium uppercase tracking-wide text-slate-400">
+                  Beneficiary age
+                </span>
+                <input
+                  type="number"
+                  min={18}
+                  max={100}
+                  value={beneficiaryAge}
+                  onChange={(e) => setBeneficiaryAge(e.target.value)}
+                  placeholder="e.g. 53"
+                  className="mt-1 w-full rounded-md border border-slate-700 bg-slate-900 px-2 py-2 text-xs text-slate-100 placeholder-slate-600 focus:border-blue-500 focus:outline-none"
+                />
+              </label>
+            )}
+          </div>
+
+          <label className="flex cursor-pointer items-center gap-2 rounded-md border border-slate-800 bg-slate-900/50 px-3 py-2 text-[11px] font-medium text-slate-300 hover:border-slate-700">
+            <input
+              type="checkbox"
+              checked={isVeteran}
+              onChange={(e) => setIsVeteran(e.target.checked)}
+              className="h-3.5 w-3.5 rounded border-slate-700 bg-slate-900 text-blue-500 focus:ring-blue-500"
+            />
+            Veteran benefit ($15/yr × YOS, max $300, age 36+)
+          </label>
+        </div>
+      </div>
+
+      {/* Results + projection */}
+      <div className="space-y-4">
+        <div className="rounded-xl border border-slate-800 bg-gradient-to-br from-slate-950/80 to-slate-900/80 p-5 shadow-md shadow-black/30">
+          {!result.eligible ? (
+            <div className="space-y-2">
+              <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-300">
+                Not yet eligible
+              </div>
+              <p className="text-xs leading-relaxed text-slate-400">
+                {result.eligibilityMessage}
+              </p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                  Estimated annual pension
+                </p>
+                <p className="mt-1 text-3xl font-bold text-slate-50 tracking-tight">
+                  {formatCurrency(result.annual)}
+                </p>
+                <p className="mt-0.5 text-xs text-slate-400">
+                  {formatCurrency(result.monthly)} / month ·{" "}
+                  {avgSalary > 0 ? `${replacementRate.toFixed(1)}%` : "—"} of
+                  salary
+                </p>
+              </div>
+
+              {option === "C" && result.survivorAnnual > 0 && (
+                <div className="rounded-md border border-violet-500/20 bg-violet-500/5 px-3 py-2">
+                  <p className="text-[10px] font-semibold uppercase tracking-wider text-violet-300">
+                    Survivor benefit (66.67%)
+                  </p>
+                  <p className="mt-0.5 text-sm font-semibold text-slate-100">
+                    {formatCurrency(result.survivorAnnual)} / yr ·{" "}
+                    {formatCurrency(result.survivorMonthly)} / mo
+                  </p>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2 border-t border-slate-800 pt-3 text-[11px]">
+                <div className="rounded-md bg-slate-900/50 px-2 py-1.5">
+                  <span className="block text-slate-500">
+                    {isMultiGroup ? "Blended factor" : "Age factor"}
+                  </span>
+                  <span className="font-mono text-sm font-semibold text-slate-200">
+                    {(result.blendedFactor * 100).toFixed(2)}%
+                  </span>
+                </div>
+                <div className="rounded-md bg-slate-900/50 px-2 py-1.5">
+                  <span className="block text-slate-500">Total YOS</span>
+                  <span className="font-mono text-sm font-semibold text-slate-200">
+                    {result.totalYears}
+                  </span>
+                </div>
+              </div>
+
+              {result.veteranBenefit > 0 && (
+                <p className="rounded-md border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[11px] font-medium text-emerald-300">
+                  + {formatCurrency(result.veteranBenefit)} / yr veteran benefit
+                  applied
+                </p>
+              )}
+
+              {isMultiGroup && (
+                <div className="rounded-md border border-slate-800 bg-slate-900/40 p-2">
+                  <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+                    Group breakdown
+                  </p>
+                  <ul className="space-y-1">
+                    {result.segmentBreakdown.map((s, i) => (
+                      <li
+                        key={i}
+                        className="flex items-baseline justify-between text-[11px] text-slate-400"
+                      >
+                        <span>
+                          Group {s.group} · {s.years}y ·{" "}
+                          {(s.factor * 100).toFixed(2)}%
+                        </span>
+                        <span className="font-mono text-slate-200">
+                          {formatCurrency(s.portion)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {result.capped && (
+                <p className="rounded-md border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-[11px] text-amber-200">
+                  <strong className="font-semibold">Capped at 80%.</strong>{" "}
+                  Uncapped formula yields{" "}
+                  {formatCurrency(result.weightedUncapped)}.
+                </p>
+              )}
+            </div>
           )}
         </div>
 
-        <label className="flex cursor-pointer items-center gap-2 text-[11px] font-medium text-slate-300">
-          <input
-            type="checkbox"
-            checked={isVeteran}
-            onChange={(e) => setIsVeteran(e.target.checked)}
-            className="h-3.5 w-3.5 rounded border-slate-700 bg-slate-900 text-blue-500 focus:ring-blue-500"
-          />
-          Veteran benefit ($15/yr × YOS, max $300, age 36+)
-        </label>
-      </div>
-
-      <div className="mt-4 rounded-md border border-slate-800 bg-slate-900/60 p-3">
-        {!result.eligible ? (
-          <div className="space-y-1">
-            <p className="text-xs font-semibold text-amber-300">
-              Not yet eligible
-            </p>
-            <p className="text-[11px] text-slate-400">
-              {result.eligibilityMessage}
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2">
-            <div className="flex items-baseline justify-between">
-              <span className="text-[11px] uppercase tracking-wide text-slate-400">
-                Estimated annual
-              </span>
-              <span className="text-lg font-semibold text-slate-50">
-                {formatCurrency(result.annual)}
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between">
-              <span className="text-[11px] uppercase tracking-wide text-slate-400">
-                Estimated monthly
-              </span>
-              <span className="text-sm font-semibold text-slate-200">
-                {formatCurrency(result.monthly)}
-              </span>
-            </div>
-            {option === "C" && result.survivorAnnual > 0 && (
-              <div className="flex items-baseline justify-between border-t border-slate-800 pt-2">
-                <span className="text-[11px] uppercase tracking-wide text-slate-400">
-                  Survivor (66.67%)
+        {/* Projection table */}
+        <div className="rounded-xl border border-slate-800 bg-slate-950/60">
+          <button
+            type="button"
+            onClick={() => setShowProjection((v) => !v)}
+            className="flex w-full items-center justify-between rounded-t-xl px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-slate-900/60"
+          >
+            <span className="flex items-center gap-2">
+              <svg
+                className="h-3.5 w-3.5 text-slate-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+              Year-by-year projection
+              {projection.length > 0 && (
+                <span className="text-slate-500">
+                  · {projection.length} yr{projection.length === 1 ? "" : "s"}
                 </span>
-                <span className="text-xs font-semibold text-slate-300">
-                  {formatCurrency(result.survivorAnnual)} / yr ·{" "}
-                  {formatCurrency(result.survivorMonthly)} / mo
-                </span>
-              </div>
-            )}
-            <div className="flex items-baseline justify-between border-t border-slate-800 pt-2 text-[11px] text-slate-400">
-              <span>{isMultiGroup ? "Blended factor" : "Age factor"}</span>
-              <span className="font-mono text-slate-300">
-                {(result.blendedFactor * 100).toFixed(2)}%
-              </span>
-            </div>
-            <div className="flex items-baseline justify-between text-[11px] text-slate-400">
-              <span>Replacement rate</span>
-              <span className="font-mono text-slate-300">
-                {avgSalary > 0 ? `${replacementRate.toFixed(1)}%` : "—"}
-              </span>
-            </div>
-            {result.veteranBenefit > 0 && (
-              <div className="flex items-baseline justify-between text-[11px] text-emerald-300">
-                <span>Veteran benefit (added)</span>
-                <span className="font-mono">
-                  +{formatCurrency(result.veteranBenefit)} / yr
-                </span>
-              </div>
-            )}
-            {isMultiGroup && (
-              <div className="border-t border-slate-800 pt-2">
-                <p className="text-[10px] uppercase tracking-wide text-slate-500">
-                  Group breakdown
-                </p>
-                <ul className="mt-1 space-y-0.5">
-                  {result.segmentBreakdown.map((s, i) => (
-                    <li
-                      key={i}
-                      className="flex items-baseline justify-between text-[11px] text-slate-400"
-                    >
-                      <span>
-                        Group {s.group} · {s.years} yrs ·{" "}
-                        {(s.factor * 100).toFixed(2)}%
-                      </span>
-                      <span className="font-mono text-slate-300">
-                        {formatCurrency(s.portion)}
-                      </span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            {result.capped && (
-              <p className="rounded border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] text-amber-200">
-                Capped at the 80% statutory maximum. Uncapped formula would
-                yield {formatCurrency(result.weightedUncapped)}.
-              </p>
-            )}
-          </div>
-        )}
-      </div>
+              )}
+            </span>
+            <span className="text-slate-500">{showProjection ? "−" : "+"}</span>
+          </button>
 
-      {/* Projection table */}
-      <div className="mt-4">
-        <button
-          type="button"
-          onClick={() => setShowProjection((v) => !v)}
-          className="flex w-full items-center justify-between rounded-md border border-slate-800 bg-slate-900/60 px-3 py-2 text-[11px] font-medium text-slate-300 hover:border-slate-700"
-        >
-          <span>
-            Year-by-year projection
-            {projection.length > 0 && (
-              <span className="ml-1 text-slate-500">
-                ({projection.length} year{projection.length === 1 ? "" : "s"})
-              </span>
-            )}
-          </span>
-          <span className="text-slate-500">{showProjection ? "−" : "+"}</span>
-        </button>
-
-        {showProjection && projection.length > 0 && (
-          <div className="mt-2 overflow-x-auto rounded-md border border-slate-800">
-            <table className="w-full min-w-[36rem] text-[11px]">
-              <thead className="bg-slate-900/80 text-left text-[10px] uppercase tracking-wide text-slate-500">
-                <tr>
-                  <th className="px-2 py-1.5 font-medium">Age</th>
-                  <th className="px-2 py-1.5 font-medium">YOS</th>
-                  <th className="px-2 py-1.5 font-medium">Factor</th>
-                  <th className="px-2 py-1.5 font-medium">Total %</th>
-                  <th className="px-2 py-1.5 text-right font-medium">
-                    Annual (Opt {option})
-                  </th>
-                  <th className="px-2 py-1.5 text-right font-medium">
-                    Monthly
-                  </th>
-                  {option === "C" && (
-                    <>
-                      <th className="px-2 py-1.5 text-right font-medium">
-                        Survivor / yr
-                      </th>
-                      <th className="px-2 py-1.5 text-right font-medium">
-                        Survivor / mo
-                      </th>
-                    </>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/60">
-                {projection.map((row) => (
-                  <tr
-                    key={row.age}
-                    className={
-                      row.age === age
-                        ? "bg-blue-500/10 text-slate-100"
-                        : "text-slate-300"
-                    }
-                  >
-                    <td className="px-2 py-1.5 font-medium">{row.age}</td>
-                    <td className="px-2 py-1.5">{row.totalYears}</td>
-                    <td className="px-2 py-1.5 font-mono">
-                      {(row.blendedFactor * 100).toFixed(2)}%
-                    </td>
-                    <td className="px-2 py-1.5 font-mono">
-                      {(row.totalPercentage * 100).toFixed(1)}%
-                      {row.capped && (
-                        <span className="ml-1 text-amber-400">cap</span>
-                      )}
-                    </td>
-                    <td className="px-2 py-1.5 text-right font-mono">
-                      {formatCurrency(row.annual)}
-                    </td>
-                    <td className="px-2 py-1.5 text-right font-mono">
-                      {formatCurrency(row.monthly)}
-                    </td>
+          {showProjection && projection.length > 0 && (
+            <div className="overflow-x-auto border-t border-slate-800">
+              <table className="w-full min-w-[34rem] text-[11px]">
+                <thead className="bg-slate-900/40 text-left text-[10px] uppercase tracking-wide text-slate-500">
+                  <tr>
+                    <th className="px-3 py-2 font-semibold">Age</th>
+                    <th className="px-3 py-2 font-semibold">YOS</th>
+                    <th className="px-3 py-2 font-semibold">Factor</th>
+                    <th className="px-3 py-2 font-semibold">Total %</th>
+                    <th className="px-3 py-2 text-right font-semibold">
+                      Annual
+                    </th>
+                    <th className="px-3 py-2 text-right font-semibold">
+                      Monthly
+                    </th>
                     {option === "C" && (
-                      <>
-                        <td className="px-2 py-1.5 text-right font-mono">
+                      <th className="px-3 py-2 text-right font-semibold">
+                        Survivor
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {projection.map((row) => (
+                    <tr
+                      key={row.age}
+                      className={
+                        row.age === age
+                          ? "bg-sky-500/10 text-slate-50"
+                          : "text-slate-300 hover:bg-slate-900/40"
+                      }
+                    >
+                      <td className="px-3 py-1.5 font-semibold">{row.age}</td>
+                      <td className="px-3 py-1.5">{row.totalYears}</td>
+                      <td className="px-3 py-1.5 font-mono text-slate-400">
+                        {(row.blendedFactor * 100).toFixed(2)}%
+                      </td>
+                      <td className="px-3 py-1.5 font-mono text-slate-400">
+                        {(row.totalPercentage * 100).toFixed(1)}%
+                        {row.capped && (
+                          <span className="ml-1 text-[9px] font-bold text-amber-400">
+                            CAP
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-3 py-1.5 text-right font-mono">
+                        {formatCurrency(row.annual)}
+                      </td>
+                      <td className="px-3 py-1.5 text-right font-mono">
+                        {formatCurrency(row.monthly)}
+                      </td>
+                      {option === "C" && (
+                        <td className="px-3 py-1.5 text-right font-mono text-violet-300">
                           {row.survivorAnnual != null
                             ? formatCurrency(row.survivorAnnual)
                             : "—"}
                         </td>
-                        <td className="px-2 py-1.5 text-right font-mono">
-                          {row.survivorMonthly != null
-                            ? formatCurrency(row.survivorMonthly)
-                            : "—"}
-                        </td>
-                      </>
-                    )}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
-        {showProjection && projection.length === 0 && (
-          <p className="mt-2 px-2 text-[11px] text-slate-500">
-            No eligible projection rows for the current inputs.
-          </p>
-        )}
-      </div>
+                      )}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {showProjection && projection.length === 0 && (
+            <p className="border-t border-slate-800 px-4 py-3 text-[11px] text-slate-500">
+              No eligible projection rows for the current inputs.
+            </p>
+          )}
+        </div>
 
-      <p className="mt-3 text-[10px] leading-relaxed text-slate-500">
-        Estimate only. Actual allowance is determined by your retirement board
-        and may be adjusted by buybacks, COLAs, and other statutory factors.
-        Confirm with your board before relying on these numbers.
-      </p>
+        <p className="text-[10px] leading-relaxed text-slate-500">
+          Estimate only. Actual allowance is determined by your retirement
+          board and may be adjusted by buybacks, COLAs, and other statutory
+          factors. Confirm with your board before relying on these numbers.
+        </p>
+      </div>
     </div>
   );
 }

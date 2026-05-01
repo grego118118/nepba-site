@@ -8,39 +8,38 @@ import { RetirementDateForm } from "./RetirementDateForm";
 import { RetirementCountdownCard } from "../RetirementCountdownCard";
 
 export default async function RetirementPage() {
-	const session = await auth();
+  const session = await auth();
 
-	if (!session?.user) {
-		redirect("/login?callbackUrl=/dashboard/retirement");
-	}
+  if (!session?.user) {
+    redirect("/login?callbackUrl=/dashboard/retirement");
+  }
 
-	const email = session.user.email ?? "Member";
+  const email = session.user.email ?? "Member";
 
-	// Get user ID and profile data
-	let userId = "";
-	let targetRetirementDateIso: string | null = null;
-	let initialGroup: string | null = null;
-	let initialHireDateIso: string | null = null;
-	let initialAverageSalary: number | null = null;
-	if (session.user.email) {
-		const userWithProfile = await db.query.users.findFirst({
-			where: eq(users.email, session.user.email),
-			with: { profile: true },
-		});
-		userId = userWithProfile?.id ?? "";
-		const profile = userWithProfile?.profile ?? null;
-		const target = profile?.targetRetirementDate ?? null;
-		targetRetirementDateIso = target ? target.toISOString() : null;
-		initialGroup = profile?.retirementGroup ?? null;
-		initialHireDateIso = profile?.hireDate
-			? profile.hireDate.toISOString()
-			: null;
-		initialAverageSalary = profile?.averageSalary ?? null;
-	}
+  let userId = "";
+  let targetRetirementDateIso: string | null = null;
+  let initialGroup: string | null = null;
+  let initialHireDateIso: string | null = null;
+  let initialAverageSalary: number | null = null;
+  if (session.user.email) {
+    const userWithProfile = await db.query.users.findFirst({
+      where: eq(users.email, session.user.email),
+      with: { profile: true },
+    });
+    userId = userWithProfile?.id ?? "";
+    const profile = userWithProfile?.profile ?? null;
+    const target = profile?.targetRetirementDate ?? null;
+    targetRetirementDateIso = target ? target.toISOString() : null;
+    initialGroup = profile?.retirementGroup ?? null;
+    initialHireDateIso = profile?.hireDate
+      ? profile.hireDate.toISOString()
+      : null;
+    initialAverageSalary = profile?.averageSalary ?? null;
+  }
 
   return (
     <main className="min-h-screen bg-slate-900 text-slate-100">
-		      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 py-10 md:px-8">
+      <div className="mx-auto flex min-h-screen max-w-6xl flex-col gap-8 px-4 py-10 md:px-8">
         <header className="flex flex-col gap-2 border-b border-slate-800 pb-4 md:flex-row md:items-center md:justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-blue-300">
@@ -50,8 +49,8 @@ export default async function RetirementPage() {
               Retirement &amp; Planning
             </h1>
             <p className="text-xs text-slate-400 md:text-sm">
-              Review retirement information and tools. Signed in as{" "}
-              <span className="font-medium text-slate-100">{email}</span>.
+              Pension estimator, projection, and target-date tracking. Signed in
+              as <span className="font-medium text-slate-100">{email}</span>.
             </p>
           </div>
           <div className="mt-2 flex flex-col items-end gap-1 md:mt-0">
@@ -59,213 +58,199 @@ export default async function RetirementPage() {
               href="/dashboard"
               className="text-xs font-medium text-slate-400 underline-offset-2 hover:text-slate-200 hover:underline"
             >
-              Back to dashboard
+              ← Back to dashboard
             </Link>
           </div>
         </header>
 
-	        {/* Prominent countdown at the top */}
-	        <RetirementCountdownCard targetRetirementDateIso={targetRetirementDateIso} hideUpdateLink />
+        {/* Hero countdown */}
+        <RetirementCountdownCard
+          targetRetirementDateIso={targetRetirementDateIso}
+          hideUpdateLink
+        />
 
-	        <section className="grid gap-4 md:grid-cols-2">
-	          <RetirementDateForm initialTargetDateIso={targetRetirementDateIso} userId={userId} userEmail={email} />
+        <section className="grid gap-4 md:grid-cols-2">
+          <RetirementDateForm
+            initialTargetDateIso={targetRetirementDateIso}
+            userId={userId}
+            userEmail={email}
+          />
+
           <article
-            aria-labelledby="retirement-service-heading"
-            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm"
+            aria-labelledby="retirement-eligibility-heading"
+            className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 shadow-sm"
           >
-            <div className="space-y-6">
-              <div>
-                <h2
-                  id="retirement-service-heading"
-                  className="text-sm font-semibold text-slate-50"
-                >
-                  Service time tracker
-                </h2>
-                <p className="mt-2 text-xs text-slate-400">
-                  Get a high-level view of your creditable service and potential
-                  retirement eligibility under Massachusetts public employee
-                  retirement systems. Exact eligibility depends on your specific
-                  board and group classification.
-                </p>
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-blue-500/20 bg-blue-500/10 text-blue-400">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
               </div>
-              <dl className="grid grid-cols-2 gap-3 text-xs text-slate-300">
-                <div>
-                  <dt className="text-[11px] text-slate-400">Creditable service</dt>
-                  <dd className="mt-1 text-sm font-semibold text-slate-50">
-                    Coming soon
-                  </dd>
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    This area will show years of service recorded with your
-                    retirement board.
-                  </p>
-                </div>
-                <div>
-                  <dt className="text-[11px] text-slate-400">Estimated eligibility</dt>
-                  <dd className="mt-1 text-sm font-semibold text-slate-50">
-                    Coming soon
-                  </dd>
-                  <p className="mt-1 text-[11px] text-slate-500">
-                    Planned tools will highlight key age and service milestones
-                    for common Massachusetts groups.
-                  </p>
-                </div>
-              </dl>
+              <h2 id="retirement-eligibility-heading" className="text-sm font-semibold text-slate-50">
+                MA eligibility quick reference
+              </h2>
             </div>
-          </article>
 
-          <article
-            aria-labelledby="retirement-timeline-heading"
-            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm"
-          >
-            <div className="space-y-6">
-              <div>
-                <h2
-                  id="retirement-timeline-heading"
-                  className="text-sm font-semibold text-slate-50"
-                >
-                  Retirement timeline
-                </h2>
-                <p className="mt-2 text-xs text-slate-400">
-                  Map out the major checkpoints on your path to retirement, from
-                  early career through your target retirement date.
-                </p>
+            <dl className="space-y-2 text-xs">
+              <div className="flex justify-between gap-3 rounded-md bg-slate-900/50 px-3 py-2">
+                <dt className="text-slate-400">Group 1 — General</dt>
+                <dd className="font-mono text-slate-200">Age 55 (pre-2012) / 60 (post)</dd>
               </div>
-              <ol className="mt-1 space-y-3 text-xs text-slate-300">
-                <li className="flex items-start gap-2">
-                  <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-blue-400" />
-                  <div>
-                    <p className="font-medium text-slate-100">50 years of service</p>
-                    <p className="text-[11px] text-slate-400">
-                      Many Massachusetts systems recognize key vesting
-                      milestones as you accumulate creditable service.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-blue-400" />
-                  <div>
-                    <p className="font-medium text-slate-100">Age &amp; service eligibility</p>
-                    <p className="text-[11px] text-slate-400">
-                      Your group classification and hire date determine when you
-                      may first be eligible for a retirement allowance.
-                    </p>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-blue-400" />
-                  <div>
-                    <p className="font-medium text-slate-100">Target retirement window</p>
-                    <p className="text-[11px] text-slate-400">
-                      Work with your Local 190 representatives and retirement
-                      board to pick a window that aligns with your career,
-                      benefits, and family plans.
-                    </p>
-                  </div>
-                </li>
-              </ol>
-              <p className="text-[11px] text-slate-500">
-                This timeline is informational only and does not replace an
-                official estimate from your retirement board.
-              </p>
+              <div className="flex justify-between gap-3 rounded-md bg-slate-900/50 px-3 py-2">
+                <dt className="text-slate-400">Group 2 — Hazardous</dt>
+                <dd className="font-mono text-slate-200">Age 55 (both eras)</dd>
+              </div>
+              <div className="flex justify-between gap-3 rounded-md bg-slate-900/50 px-3 py-2">
+                <dt className="text-slate-400">Group 3 — State Police</dt>
+                <dd className="font-mono text-slate-200">20+ YOS, any age</dd>
+              </div>
+              <div className="flex justify-between gap-3 rounded-md bg-slate-900/50 px-3 py-2">
+                <dt className="text-slate-400">Group 4 — Police / Fire</dt>
+                <dd className="font-mono text-slate-200">Age 45 (pre-2012) / 50 (post)</dd>
+              </div>
+            </dl>
+
+            <div className="mt-3 grid grid-cols-2 gap-2 text-[11px]">
+              <div className="rounded-md border border-slate-800 px-2 py-1.5">
+                <span className="block text-slate-500">Vesting</span>
+                <span className="font-semibold text-slate-200">10 years of service</span>
+              </div>
+              <div className="rounded-md border border-slate-800 px-2 py-1.5">
+                <span className="block text-slate-500">Statutory cap</span>
+                <span className="font-semibold text-slate-200">80% of avg salary</span>
+              </div>
             </div>
           </article>
 
           <article
             aria-labelledby="retirement-benefits-heading"
-            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm md:col-span-2"
+            className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 shadow-sm md:col-span-2"
           >
-            <div className="space-y-6">
-              <div>
-                <h2
-                  id="retirement-benefits-heading"
-                  className="text-sm font-semibold text-slate-50"
+            <div className="mb-4 space-y-2">
+              <div className="flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-md border border-sky-500/20 bg-sky-500/10 text-sky-400">
+                    <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                  <h2 id="retirement-benefits-heading" className="text-sm font-semibold text-slate-50">
+                    Pension estimator
+                  </h2>
+                </div>
+                <Link
+                  href="/dashboard/profile"
+                  className="text-[11px] text-slate-400 hover:text-blue-300"
                 >
-                  Benefit estimates
-                </h2>
-                <p className="mt-2 text-xs text-slate-400">
-                  Understand how age, years of service, and group classification
-                  can affect your pension under Massachusetts law. Use the
-                  calculator below for rough planning only.
-                </p>
-                <p className="mt-2 text-[11px] text-slate-500">
-                  Set your retirement group, hire date, and average salary on
-                  the{" "}
-                  <Link
-                    href="/dashboard/profile"
-                    className="text-blue-300 hover:text-blue-200"
-                  >
-                    profile page
-                  </Link>{" "}
-                  and they&apos;ll pre-fill here automatically.
-                </p>
+                  Edit profile to pre-fill →
+                </Link>
               </div>
-              <div
-                role="group"
-                aria-label="Interactive Massachusetts pension calculator"
-                className="mt-1 flex justify-center"
-              >
-                <RetirementCalculatorEmbed
-                  initialGroup={initialGroup as "1" | "2" | "3" | "4" | null}
-                  initialHireDateIso={initialHireDateIso}
-                  initialAverageSalary={initialAverageSalary}
-                  initialTargetRetirementDateIso={targetRetirementDateIso}
-                />
-              </div>
+              <p className="text-xs text-slate-400">
+                Uses MSRB-validated formulas (M.G.L. c. 32). Supports
+                multi-group service and a year-by-year projection through the
+                80% statutory cap.
+              </p>
+            </div>
+            <div role="group" aria-label="Interactive Massachusetts pension calculator">
+              <RetirementCalculatorEmbed
+                initialGroup={initialGroup as "1" | "2" | "3" | "4" | null}
+                initialHireDateIso={initialHireDateIso}
+                initialAverageSalary={initialAverageSalary}
+                initialTargetRetirementDateIso={targetRetirementDateIso}
+              />
             </div>
           </article>
 
           <article
             aria-labelledby="retirement-resources-heading"
-            className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 shadow-sm"
+            className="rounded-xl border border-slate-800 bg-slate-950/70 p-5 shadow-sm md:col-span-2"
           >
-            <div className="space-y-4">
-              <div>
-                <h2
-                  id="retirement-resources-heading"
-                  className="text-sm font-semibold text-slate-50"
-                >
-                  Resources &amp; documents
-                </h2>
-                <p className="mt-2 text-xs text-slate-400">
-                  Centralize the retirement forms and references you use most
-                  often, alongside union-specific guidance from NEPBA Local 190.
-                </p>
+            <div className="mb-3 flex items-center gap-2">
+              <div className="flex h-7 w-7 items-center justify-center rounded-md border border-emerald-500/20 bg-emerald-500/10 text-emerald-400">
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                </svg>
               </div>
-              <ul className="space-y-2 text-xs text-slate-300">
-                <li>
-                  <Link
-                    href="#"
-                    className="text-blue-300 hover:text-blue-200"
-                  >
-                    Massachusetts public employee retirement overview (PDF)
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-blue-300 hover:text-blue-200"
-                  >
-                    Sample retirement application checklist
-                  </Link>
-                </li>
-                <li>
-                  <Link
-                    href="#"
-                    className="text-blue-300 hover:text-blue-200"
-                  >
-                    Beneficiary and survivor benefit basics
-                  </Link>
-                </li>
-              </ul>
-              <p className="text-[11px] text-slate-500">
-                Additional digital forms, Local 190-specific guidance, and
-                contract references will be added here over time.
-              </p>
+              <h2 id="retirement-resources-heading" className="text-sm font-semibold text-slate-50">
+                Official Massachusetts resources
+              </h2>
             </div>
+
+            <ul className="grid gap-2 text-xs text-slate-300 md:grid-cols-2">
+              <li>
+                <a
+                  href="https://www.mass.gov/orgs/massachusetts-state-retirement-board"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>Massachusetts State Retirement Board</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.mass.gov/info-details/your-retirement-group-classification"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>Group classification reference</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.mass.gov/info-details/calculate-your-pension"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>Official MSRB pension calculator</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.mass.gov/info-details/applying-for-retirement"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>How to apply for retirement</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.mass.gov/info-details/your-retirement-options-options-a-b-and-c"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>Retirement options A, B, and C</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://www.mass.gov/info-details/cost-of-living-adjustment-cola-for-retirees"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between gap-3 rounded-md border border-slate-800 px-3 py-2 transition-colors hover:border-blue-500/40 hover:bg-slate-900/60"
+                >
+                  <span>Cost-of-living adjustment (COLA)</span>
+                  <span className="text-slate-500">↗</span>
+                </a>
+              </li>
+            </ul>
+            <p className="mt-3 text-[11px] text-slate-500">
+              These are official Massachusetts state resources. For Local
+              190-specific guidance, contact your executive board representative.
+            </p>
           </article>
         </section>
       </div>
     </main>
   );
 }
-
