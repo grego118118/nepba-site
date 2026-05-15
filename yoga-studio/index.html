@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Birdsong Yoga &mdash; Maggie d'Amour | Northampton, MA</title>
+    <meta
+      name="description"
+      content="Birdsong Yoga is a sanctuary in Northampton, Massachusetts where breath meets birdsong. Sunrise vinyasa, restorative practice, bird-watching retreats and outdoor flow with Maggie d'Amour."
+    />
+    <meta name="theme-color" content="#2D3E2F" />
+    <meta property="og:title" content="Birdsong Yoga &mdash; Northampton, MA" />
+    <meta
+      property="og:description"
+      content="A yoga sanctuary inspired by birdsong. Northampton, Massachusetts."
+    />
+    <meta property="og:type" content="website" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Inter:wght@300;400;500;600&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/styles.css" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%95%8A%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  </head>
+  <body>
+    <!-- ========== NAV ========== -->
+    <header class="nav" id="nav">
+      <div class="nav__inner container">
+        <a href="#top" class="nav__brand" aria-label="Birdsong Yoga, home">
+          <svg
+            class="nav__logo"
+            viewBox="0 0 64 64"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M8 40 C 18 22, 36 18, 50 26 C 46 30, 40 32, 36 32 C 44 36, 50 40, 56 50 C 42 48, 28 50, 18 56 C 14 50, 10 46, 8 40 Z"
+              fill="currentColor"
+            />
+            <circle cx="46" cy="27" r="1.6" fill="#F4EFE6" />
+          </svg>
+          <span class="nav__wordmark">
+            <span class="nav__wordmark-name">Birdsong</span>
+            <span class="nav__wordmark-sub">YOGA &middot; NORTHAMPTON</span>
+          </span>
+        </a>
+
+        <nav class="nav__links" aria-label="Primary">
+          <a href="#about">About</a>
+          <a href="#classes">Classes</a>
+          <a href="#schedule">Schedule</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#retreats">Retreats</a>
+          <a href="#journal">Journal</a>
+          <a href="#visit">Visit</a>
+        </nav>
+
+        <a href="book.html" class="btn btn--primary nav__cta">Book a Class</a>
+
+        <button
+          class="nav__toggle"
+          id="navToggle"
+          aria-label="Open menu"
+          aria-expanded="false"
+          aria-controls="mobileMenu"
+        >
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+      <div class="mobile-menu" id="mobileMenu" hidden>
+        <a href="#about">About Maggie</a>
+        <a href="#classes">Classes</a>
+        <a href="#schedule">Schedule</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#retreats">Retreats</a>
+        <a href="#journal">Journal</a>
+        <a href="#visit">Visit</a>
+        <a href="book.html" class="btn btn--primary">Book a Class</a>
+      </div>
+    </header>
+
+    <!-- ========== HERO ========== -->
+    <section class="hero" id="top">
+      <div class="hero__media" aria-hidden="true">
+        <img
+          src="https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=2400&q=80"
+          alt=""
+          loading="eager"
+        />
+        <div class="hero__veil"></div>
+      </div>
+
+      <!-- Floating bird silhouettes -->
+      <svg class="hero__bird hero__bird--1" viewBox="0 0 100 40" aria-hidden="true">
+        <path
+          d="M2 20 Q 18 6 34 20 Q 50 6 66 20 Q 82 6 98 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg class="hero__bird hero__bird--2" viewBox="0 0 100 40" aria-hidden="true">
+        <path
+          d="M2 20 Q 18 8 34 20 Q 50 8 66 20 Q 82 8 98 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.6"
+          stroke-linecap="round"
+        />
+      </svg>
+      <svg class="hero__bird hero__bird--3" viewBox="0 0 100 40" aria-hidden="true">
+        <path
+          d="M2 20 Q 18 10 34 20 Q 50 10 66 20 Q 82 10 98 20"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.2"
+          stroke-linecap="round"
+        />
+      </svg>
+
+      <div class="hero__content container">
+        <p class="eyebrow eyebrow--light reveal">A Sanctuary in Northampton, MA</p>
+        <h1 class="hero__title reveal">
+          Where the breath
+          <span class="hero__title-em">meets the birdsong.</span>
+        </h1>
+        <p class="hero__lede reveal">
+          Birdsong Yoga is a small, light-filled studio in the heart of the
+          Pioneer Valley. Sunrise vinyasa, slow flow, restorative practice and
+          monthly outdoor sessions held alongside the Connecticut River and the
+          Arcadia Wildlife Sanctuary.
+        </p>
+        <div class="hero__cta reveal">
+          <a href="book.html" class="btn btn--primary btn--large">Book Your First Class &mdash; $15</a>
+          <a href="#classes" class="btn btn--ghost btn--large">Explore Classes</a>
+        </div>
+        <ul class="hero__bullets reveal" aria-label="Studio highlights">
+          <li><span aria-hidden="true">&#10070;</span> Beginner friendly</li>
+          <li><span aria-hidden="true">&#10070;</span> Small class sizes</li>
+          <li><span aria-hidden="true">&#10070;</span> Open to all bodies</li>
+        </ul>
+      </div>
+
+      <a href="#about" class="hero__scroll" aria-label="Scroll to next section">
+        <span></span>
+      </a>
+    </section>
+
+    <!-- ========== MARQUEE ========== -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee__track">
+        <span>Vinyasa</span><span>&#10070;</span>
+        <span>Restorative</span><span>&#10070;</span>
+        <span>Yin</span><span>&#10070;</span>
+        <span>Sunrise Flow</span><span>&#10070;</span>
+        <span>Outdoor Practice</span><span>&#10070;</span>
+        <span>Bird-Watching Retreats</span><span>&#10070;</span>
+        <span>Workshops</span><span>&#10070;</span>
+        <span>Vinyasa</span><span>&#10070;</span>
+        <span>Restorative</span><span>&#10070;</span>
+        <span>Yin</span><span>&#10070;</span>
+        <span>Sunrise Flow</span><span>&#10070;</span>
+        <span>Outdoor Practice</span><span>&#10070;</span>
+        <span>Bird-Watching Retreats</span><span>&#10070;</span>
+        <span>Workshops</span><span>&#10070;</span>
+      </div>
+    </div>
+
+    <!-- ========== ABOUT ========== -->
+    <section class="section about" id="about">
+      <div class="container about__grid">
+        <div class="about__media reveal">
+          <div class="about__media-frame">
+            <img
+              src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1200&q=80"
+              alt="Portrait of a yoga teacher in soft morning light"
+              loading="lazy"
+            />
+          </div>
+          <svg class="about__media-bird" viewBox="0 0 200 200" aria-hidden="true">
+            <path
+              d="M30 110 C 60 70, 110 60, 160 80 C 150 95, 130 105, 115 105 C 145 115, 170 130, 185 165 C 145 150, 100 150, 65 170 C 50 155, 38 135, 30 110 Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+
+        <div class="about__copy">
+          <p class="eyebrow reveal">Meet your teacher</p>
+          <h2 class="h2 reveal">Maggie d'Amour</h2>
+          <p class="lede reveal">
+            "I learned to listen long before I learned to speak &mdash; I
+            listened to birds. The hermit thrush at dawn. The chickadees in
+            winter. I built this studio so that you, too, could come home to
+            that quieter place."
+          </p>
+          <p class="reveal">
+            Maggie is a 500-hour Yoga Alliance certified teacher, lifelong
+            birder, and founder of Birdsong Yoga. After fifteen years of
+            practice across India, the Berkshires, and the wetlands of western
+            Mass, she opened the studio in 2026 with a simple intention:
+            <em>a slower kind of strength.</em>
+          </p>
+          <p class="reveal">
+            Every class is taught with patience and precision. Every retreat is
+            shaped by the seasons. And every Friday morning, weather permitting,
+            she leads a free walk-and-watch from the studio steps to the meadow.
+          </p>
+
+          <div class="about__creds reveal">
+            <div>
+              <strong>500 RYT</strong>
+              <span>Yoga Alliance</span>
+            </div>
+            <div>
+              <strong>Mass Audubon</strong>
+              <span>Volunteer Naturalist</span>
+            </div>
+            <div>
+              <strong>15+ years</strong>
+              <span>Teaching practice</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== CLASSES ========== -->
+    <section class="section section--cream" id="classes">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow">What we offer</p>
+          <h2 class="h2">Classes &amp; Practices</h2>
+          <p class="section__sub">
+            Six signature offerings &mdash; each one shaped by the rhythm of the
+            Pioneer Valley. Browse the full schedule below or book a single
+            class to begin.
+          </p>
+        </header>
+
+        <div class="cards">
+          <article class="card reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="M8 50 Q 32 6 56 50" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><circle cx="32" cy="14" r="3" fill="currentColor"/></svg>
+            </div>
+            <h3>Sunrise Birdsong Flow</h3>
+            <p class="card__meta">60 min &middot; All levels</p>
+            <p>
+              The signature class. A gently warming vinyasa that begins as the
+              dawn chorus does &mdash; with one bright note. Tuesdays and
+              Saturdays at 6:30am.
+            </p>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="M12 32 Q 32 12 52 32 Q 32 52 12 32 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+            </div>
+            <h3>Slow &amp; Steady Vinyasa</h3>
+            <p class="card__meta">75 min &middot; All levels</p>
+            <p>
+              A grounded, breath-led flow with longer holds and intelligent
+              alignment. Good for new and returning students.
+            </p>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="18" fill="none" stroke="currentColor" stroke-width="2.5"/><circle cx="32" cy="32" r="6" fill="currentColor"/></svg>
+            </div>
+            <h3>Restorative &amp; Yin</h3>
+            <p class="card__meta">90 min &middot; All levels</p>
+            <p>
+              Deep, supported postures with bolsters and blankets. A long,
+              quiet practice for the nervous system. Sunday evenings.
+            </p>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="M10 44 L 32 14 L 54 44 Z" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+            </div>
+            <h3>Strong &amp; Steady</h3>
+            <p class="card__meta">60 min &middot; Level 2</p>
+            <p>
+              A heated, more athletic flow for students with an established
+              practice. Inversions and arm balances by request.
+            </p>
+          </article>
+
+          <article class="card card--feature reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="M6 40 Q 22 20 32 32 Q 42 44 58 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Outdoor Flow at Arcadia</h3>
+            <p class="card__meta">75 min &middot; April&ndash;October</p>
+            <p>
+              Once a month we practice on the meadow at Arcadia Wildlife
+              Sanctuary. Bring a mat. The herons, warblers and bobolinks bring
+              the rest. <strong>$25 &middot; includes sanctuary admission.</strong>
+            </p>
+            <a href="book.html?class=outdoor" class="card__link">Reserve a spot &rarr;</a>
+          </article>
+
+          <article class="card reveal">
+            <div class="card__icon" aria-hidden="true">
+              <svg viewBox="0 0 64 64"><path d="M14 50 C 14 32, 24 22, 32 22 C 40 22, 50 32, 50 50" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M28 22 L 32 12 L 36 22" fill="none" stroke="currentColor" stroke-width="2.5"/></svg>
+            </div>
+            <h3>Beginners' Series (4 weeks)</h3>
+            <p class="card__meta">4 sessions &middot; New to yoga</p>
+            <p>
+              The kindest possible introduction to a yoga practice. Small
+              cohort, warm room, no prior experience required. Offered four
+              times a year.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SCHEDULE ========== -->
+    <section class="section schedule" id="schedule">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow">This week at the studio</p>
+          <h2 class="h2">Schedule</h2>
+          <p class="section__sub">
+            Tap any class to reserve your spot. Memberships and class packs
+            apply automatically at checkout.
+          </p>
+        </header>
+
+        <div class="schedule__tabs reveal" role="tablist">
+          <button class="schedule__tab is-active" role="tab" data-day="mon">Mon</button>
+          <button class="schedule__tab" role="tab" data-day="tue">Tue</button>
+          <button class="schedule__tab" role="tab" data-day="wed">Wed</button>
+          <button class="schedule__tab" role="tab" data-day="thu">Thu</button>
+          <button class="schedule__tab" role="tab" data-day="fri">Fri</button>
+          <button class="schedule__tab" role="tab" data-day="sat">Sat</button>
+          <button class="schedule__tab" role="tab" data-day="sun">Sun</button>
+        </div>
+
+        <div class="schedule__list" id="scheduleList">
+          <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PRICING ========== -->
+    <section class="section section--dark" id="pricing">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow eyebrow--light">Pricing</p>
+          <h2 class="h2 h2--light">Membership &amp; Class Packs</h2>
+          <p class="section__sub section__sub--light">
+            Drop in any time, save with a pack, or join the flock with an
+            unlimited monthly membership. Cancel any time.
+          </p>
+        </header>
+
+        <div class="pricing__grid">
+          <article class="pricing-card reveal">
+            <h3>Drop-In</h3>
+            <p class="pricing-card__price"><span>$</span>22<small>/class</small></p>
+            <ul>
+              <li>Any single class</li>
+              <li>No commitment</li>
+              <li>Mat &amp; props provided</li>
+            </ul>
+            <a href="book.html?plan=dropin" class="btn btn--ghost-light">Book a class</a>
+          </article>
+
+          <article class="pricing-card pricing-card--feature reveal">
+            <span class="pricing-card__tag">Most popular</span>
+            <h3>Flock Membership</h3>
+            <p class="pricing-card__price"><span>$</span>149<small>/month</small></p>
+            <ul>
+              <li>Unlimited studio classes</li>
+              <li>2 guest passes per month</li>
+              <li>10% off retreats &amp; workshops</li>
+              <li>Free Friday bird walk</li>
+            </ul>
+            <a href="book.html?plan=flock" class="btn btn--primary">Join the flock</a>
+          </article>
+
+          <article class="pricing-card reveal">
+            <h3>10-Class Pack</h3>
+            <p class="pricing-card__price"><span>$</span>180<small>/10 classes</small></p>
+            <ul>
+              <li>Use within 6 months</li>
+              <li>Save $40 vs drop-in</li>
+              <li>Shareable with one guest</li>
+            </ul>
+            <a href="book.html?plan=pack10" class="btn btn--ghost-light">Buy class pack</a>
+          </article>
+
+          <article class="pricing-card reveal">
+            <h3>First Class</h3>
+            <p class="pricing-card__price"><span>$</span>15<small>/intro</small></p>
+            <ul>
+              <li>New students only</li>
+              <li>Any class, any day</li>
+              <li>Includes 15-min orientation</li>
+            </ul>
+            <a href="book.html?plan=intro" class="btn btn--ghost-light">Begin here</a>
+          </article>
+        </div>
+
+        <p class="pricing__footnote reveal">
+          Sliding-scale and student rates available &mdash;
+          <a href="#contact">just ask</a>. We never want price to be the reason
+          someone doesn't practice.
+        </p>
+      </div>
+    </section>
+
+    <!-- ========== RETREATS ========== -->
+    <section class="section retreats" id="retreats">
+      <div class="container retreats__grid">
+        <div class="retreats__copy">
+          <p class="eyebrow reveal">Workshops &amp; Retreats</p>
+          <h2 class="h2 reveal">A slower season,<br />in good company.</h2>
+          <p class="lede reveal">
+            Twice a year we close the studio doors and travel &mdash; once in
+            spring for the warbler migration, once in autumn for the foliage and
+            the geese. All retreats include lodging, meals, two daily practices
+            and guided walks led by Maggie and a local naturalist.
+          </p>
+
+          <div class="retreats__list">
+            <article class="retreat reveal">
+              <div class="retreat__date">
+                <span>May</span><strong>9&ndash;11</strong>
+              </div>
+              <div>
+                <h3>Spring Migration Retreat</h3>
+                <p>
+                  Two nights at a quiet inn beside the Quabbin Reservoir.
+                  Sunrise yoga, guided birding, slow afternoons, candlelit
+                  restorative.
+                </p>
+                <p class="retreat__meta">$685 &middot; All-inclusive &middot; 12 spots</p>
+              </div>
+              <a href="book.html?retreat=spring" class="btn btn--ghost">Reserve</a>
+            </article>
+
+            <article class="retreat reveal">
+              <div class="retreat__date">
+                <span>Oct</span><strong>16&ndash;18</strong>
+              </div>
+              <div>
+                <h3>Autumn Foliage &amp; Geese</h3>
+                <p>
+                  A long weekend in the Berkshires. The colors are at peak, the
+                  geese are passing through, and the practice gets quiet and
+                  warm.
+                </p>
+                <p class="retreat__meta">$745 &middot; All-inclusive &middot; 10 spots</p>
+              </div>
+              <a href="book.html?retreat=autumn" class="btn btn--ghost">Reserve</a>
+            </article>
+
+            <article class="retreat reveal">
+              <div class="retreat__date">
+                <span>Jul</span><strong>12</strong>
+              </div>
+              <div>
+                <h3>Workshop: The Anatomy of Backbends</h3>
+                <p>
+                  A three-hour Saturday afternoon workshop unpacking
+                  thoracic mobility, spinal extension, and a safer cobra.
+                </p>
+                <p class="retreat__meta">$60 &middot; 3 hours &middot; 14 spots</p>
+              </div>
+              <a href="book.html?workshop=backbends" class="btn btn--ghost">Reserve</a>
+            </article>
+          </div>
+        </div>
+
+        <aside class="retreats__sidebar reveal" aria-label="Bird walks">
+          <div class="retreats__sidebar-frame">
+            <img
+              src="https://images.unsplash.com/photo-1444930694458-01babe71870e?auto=format&fit=crop&w=1000&q=80"
+              alt="A flock of birds rising at dawn"
+              loading="lazy"
+            />
+          </div>
+          <h3>Free Friday Bird Walks</h3>
+          <p>
+            Every Friday morning, weather permitting, Maggie leads a 90-minute
+            walk-and-watch from the studio steps. No yoga required. Binoculars
+            provided. All ages welcome.
+          </p>
+          <a href="#contact" class="retreats__sidebar-link">Get the weekly list &rarr;</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ========== TESTIMONIALS ========== -->
+    <section class="section section--cream testimonials">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow">From the community</p>
+          <h2 class="h2">Words from the studio</h2>
+        </header>
+
+        <div class="testimonials__grid">
+          <figure class="quote reveal">
+            <blockquote>
+              "I came in stiff and skeptical. I leave every Tuesday morning
+              softer than I arrived. Maggie has the gift of making you feel
+              like the most important person in the room without ever raising
+              her voice."
+            </blockquote>
+            <figcaption>&mdash; Eliza R., Florence MA</figcaption>
+          </figure>
+          <figure class="quote reveal">
+            <blockquote>
+              "The Arcadia outdoor class is the best $25 I spend each month.
+              Yoga, herons, the river. I bring a thermos of coffee and stay
+              for an hour after."
+            </blockquote>
+            <figcaption>&mdash; Daniel P., Northampton MA</figcaption>
+          </figure>
+          <figure class="quote reveal">
+            <blockquote>
+              "The spring migration retreat changed how I think about a long
+              weekend. I have never slept so well or breathed so deeply."
+            </blockquote>
+            <figcaption>&mdash; Sarah K., Amherst MA</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== JOURNAL ========== -->
+    <section class="section journal" id="journal">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow">From the journal</p>
+          <h2 class="h2">Field notes &amp; practice</h2>
+          <p class="section__sub">
+            Short essays on the practice, the season, and the birds outside the
+            studio window.
+          </p>
+        </header>
+
+        <div class="journal__grid">
+          <a href="#" class="journal-card reveal">
+            <div class="journal-card__media">
+              <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            </div>
+            <p class="journal-card__meta">May 3 &middot; Practice</p>
+            <h3>The hermit thrush and the long exhale</h3>
+            <p>What a four-note song can teach us about the breath.</p>
+          </a>
+
+          <a href="#" class="journal-card reveal">
+            <div class="journal-card__media">
+              <img src="https://images.unsplash.com/photo-1598901865264-4f6e8f89086a?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            </div>
+            <p class="journal-card__meta">Apr 18 &middot; Field notes</p>
+            <h3>Five warblers to watch for in the valley this May</h3>
+            <p>The migration is here. A short field guide for new birders.</p>
+          </a>
+
+          <a href="#" class="journal-card reveal">
+            <div class="journal-card__media">
+              <img src="https://images.unsplash.com/photo-1593810450967-f9c42742e326?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            </div>
+            <p class="journal-card__meta">Apr 1 &middot; Practice</p>
+            <h3>Why slow flow is the hardest practice in the room</h3>
+            <p>On patience, holding, and the work of doing less.</p>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== NEWSLETTER ========== -->
+    <section class="section newsletter">
+      <div class="container newsletter__inner reveal">
+        <div>
+          <p class="eyebrow eyebrow--light">Stay in the loop</p>
+          <h2 class="h2 h2--light">A short letter, every Sunday.</h2>
+          <p class="section__sub section__sub--light">
+            The week's schedule, a short field note, and a reminder of what's in
+            bloom. No spam, no apps, ever.
+          </p>
+        </div>
+        <form class="newsletter__form" id="newsletterForm" novalidate>
+          <label class="visually-hidden" for="newsletterEmail">Email address</label>
+          <input
+            type="email"
+            id="newsletterEmail"
+            name="email"
+            placeholder="you@example.com"
+            required
+            autocomplete="email"
+          />
+          <button type="submit" class="btn btn--primary">Subscribe</button>
+          <p class="newsletter__msg" id="newsletterMsg" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== VISIT / CONTACT ========== -->
+    <section class="section visit" id="visit">
+      <div class="container visit__grid">
+        <div>
+          <p class="eyebrow reveal">Visit</p>
+          <h2 class="h2 reveal">Find us in Northampton.</h2>
+          <p class="lede reveal">
+            We're a five-minute walk from Pulaski Park, just off Main Street.
+            Park behind the building or take the PVTA &mdash; the B43 stops at
+            the corner.
+          </p>
+
+          <dl class="visit__details reveal" id="contact">
+            <div>
+              <dt>Address</dt>
+              <dd>118 Main Street, Suite 2B<br />Northampton, MA 01060</dd>
+            </div>
+            <div>
+              <dt>Hours</dt>
+              <dd>
+                Mon&ndash;Fri &middot; 6am&ndash;9pm<br />
+                Sat&ndash;Sun &middot; 7am&ndash;6pm
+              </dd>
+            </div>
+            <div>
+              <dt>Phone</dt>
+              <dd><a href="tel:+14135551234">(413) 555&ndash;1234</a></dd>
+            </div>
+            <div>
+              <dt>Email</dt>
+              <dd><a href="mailto:hello@birdsongyoga.com">hello@birdsongyoga.com</a></dd>
+            </div>
+          </dl>
+        </div>
+
+        <form class="contact-form reveal" id="contactForm" novalidate>
+          <h3>Send a note</h3>
+          <p>Questions about a class, a retreat, or a private session? Maggie reads everything.</p>
+
+          <label>
+            <span>Name</span>
+            <input type="text" name="name" required autocomplete="name" />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input type="email" name="email" required autocomplete="email" />
+          </label>
+
+          <label>
+            <span>What can we help with?</span>
+            <select name="topic">
+              <option>A general question</option>
+              <option>Booking a private session</option>
+              <option>Membership &amp; pricing</option>
+              <option>Workshops &amp; retreats</option>
+              <option>Corporate / wellness program</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Message</span>
+            <textarea name="message" rows="4" required></textarea>
+          </label>
+
+          <button type="submit" class="btn btn--primary">Send message</button>
+          <p class="contact-form__msg" id="contactMsg" role="status"></p>
+        </form>
+      </div>
+    </section>
+
+    <!-- ========== FOOTER ========== -->
+    <footer class="footer">
+      <div class="container footer__grid">
+        <div>
+          <a href="#top" class="footer__brand">
+            <svg viewBox="0 0 64 64" aria-hidden="true">
+              <path
+                d="M8 40 C 18 22, 36 18, 50 26 C 46 30, 40 32, 36 32 C 44 36, 50 40, 56 50 C 42 48, 28 50, 18 56 C 14 50, 10 46, 8 40 Z"
+                fill="currentColor"
+              />
+            </svg>
+            <span>Birdsong Yoga</span>
+          </a>
+          <p class="footer__tag">A sanctuary in Northampton, MA.</p>
+        </div>
+
+        <nav aria-label="Footer">
+          <h4>Studio</h4>
+          <a href="#about">About Maggie</a>
+          <a href="#classes">Classes</a>
+          <a href="#schedule">Schedule</a>
+          <a href="#pricing">Pricing</a>
+        </nav>
+        <nav aria-label="Footer extras">
+          <h4>More</h4>
+          <a href="#retreats">Retreats</a>
+          <a href="#journal">Journal</a>
+          <a href="#visit">Visit</a>
+          <a href="book.html">Book a Class</a>
+        </nav>
+        <div>
+          <h4>Follow along</h4>
+          <a href="#">Instagram</a>
+          <a href="#">YouTube</a>
+          <a href="#">Spotify</a>
+        </div>
+      </div>
+      <div class="container footer__base">
+        <p>&copy; 2026 Birdsong Yoga &middot; Northampton, MA</p>
+        <p>Designed with care &middot; <a href="#top">Back to top &uarr;</a></p>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
