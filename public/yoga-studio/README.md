@@ -23,16 +23,24 @@ yoga-studio/
 
 ---
 
+## Where it lives
+
+The site is committed at `public/yoga-studio/` inside the `nepba-site`
+repo. That places it in the Next.js app's `public/` folder, so Vercel
+serves it as-is — the live URL ends in `/yoga-studio/`. It remains a
+plain static site with no build step; the `public/` location is purely
+so the existing Vercel project can host it.
+
 ## Running it locally
 
 It's just static files. Either:
 
 ```bash
 # Option 1 — open in a browser
-open yoga-studio/index.html
+open public/yoga-studio/index.html
 
 # Option 2 — serve with any static server
-cd yoga-studio
+cd public/yoga-studio
 python3 -m http.server 8080
 # → http://localhost:8080
 ```
