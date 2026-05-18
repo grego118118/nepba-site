@@ -109,7 +109,7 @@
             <div class="schedule__item-title">${c.name}</div>
             <div class="schedule__item-meta">${c.duration} &middot; ${c.level}</div>
           </div>
-          <a href="book.html?class=${encodeURIComponent(c.name)}" class="btn btn--ghost">Reserve</a>
+          <a href="/yoga-studio/book.html?class=${encodeURIComponent(c.name)}" class="btn btn--ghost">Reserve</a>
         </div>`
       )
       .join("");
