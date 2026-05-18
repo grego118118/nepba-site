@@ -87,11 +87,27 @@
     <!-- ========== HERO ========== -->
     <section class="hero" id="top">
       <div class="hero__media" aria-hidden="true">
-        <img
-          src="https://images.unsplash.com/photo-1545389336-cf090694435e?auto=format&fit=crop&w=2400&q=80"
-          alt=""
-          loading="eager"
-        />
+        <div class="hero__sky"></div>
+        <div class="hero__sun"></div>
+        <svg
+          class="hero__hills"
+          viewBox="0 0 1440 360"
+          preserveAspectRatio="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0,150 C 240,90 480,170 720,140 C 960,110 1200,180 1440,140 L1440,360 L0,360 Z"
+            fill="#2c3d2d"
+          />
+          <path
+            d="M0,232 C 300,172 560,252 840,222 C 1080,197 1280,256 1440,226 L1440,360 L0,360 Z"
+            fill="#1f2e21"
+          />
+          <path
+            d="M0,300 C 360,266 720,316 1080,296 C 1260,286 1380,306 1440,300 L1440,360 L0,360 Z"
+            fill="#15201a"
+          />
+        </svg>
         <div class="hero__veil"></div>
       </div>
 
@@ -176,12 +192,17 @@
     <section class="section about" id="about">
       <div class="container about__grid">
         <div class="about__media reveal">
-          <div class="about__media-frame">
-            <img
-              src="https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=1200&q=80"
-              alt="Portrait of a yoga teacher in soft morning light"
-              loading="lazy"
-            />
+          <div
+            class="about__media-frame media-motif"
+            role="img"
+            aria-label="Maggie d'Amour, founder of Birdsong Yoga"
+          >
+            <svg viewBox="0 0 220 130" aria-hidden="true">
+              <path d="M26 58 Q 40 44 54 58 Q 68 44 82 58" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M104 40 Q 116 30 128 40 Q 140 30 152 40" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M72 88 Q 88 72 104 88 Q 120 72 136 88" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M150 74 Q 160 66 170 74 Q 180 66 190 74" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
           </div>
           <svg class="about__media-bird" viewBox="0 0 200 200" aria-hidden="true">
             <path
@@ -484,12 +505,17 @@
         </div>
 
         <aside class="retreats__sidebar reveal" aria-label="Bird walks">
-          <div class="retreats__sidebar-frame">
-            <img
-              src="https://images.unsplash.com/photo-1444930694458-01babe71870e?auto=format&fit=crop&w=1000&q=80"
-              alt="A flock of birds rising at dawn"
-              loading="lazy"
-            />
+          <div
+            class="retreats__sidebar-frame media-motif"
+            role="img"
+            aria-label="A flock of birds rising at dawn"
+          >
+            <svg viewBox="0 0 220 130" aria-hidden="true">
+              <path d="M26 58 Q 40 44 54 58 Q 68 44 82 58" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M104 40 Q 116 30 128 40 Q 140 30 152 40" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M72 88 Q 88 72 104 88 Q 120 72 136 88" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+              <path d="M150 74 Q 160 66 170 74 Q 180 66 190 74" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+            </svg>
           </div>
           <h3>Free Friday Bird Walks</h3>
           <p>
@@ -553,8 +579,13 @@
 
         <div class="journal__grid">
           <a href="#" class="journal-card reveal">
-            <div class="journal-card__media">
-              <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            <div class="journal-card__media media-motif media-motif--alt">
+              <svg viewBox="0 0 220 130" aria-hidden="true">
+                <path d="M26 58 Q 40 44 54 58 Q 68 44 82 58" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M104 40 Q 116 30 128 40 Q 140 30 152 40" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M72 88 Q 88 72 104 88 Q 120 72 136 88" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M150 74 Q 160 66 170 74 Q 180 66 190 74" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
             </div>
             <p class="journal-card__meta">May 3 &middot; Practice</p>
             <h3>The hermit thrush and the long exhale</h3>
@@ -562,8 +593,13 @@
           </a>
 
           <a href="#" class="journal-card reveal">
-            <div class="journal-card__media">
-              <img src="https://images.unsplash.com/photo-1598901865264-4f6e8f89086a?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            <div class="journal-card__media media-motif">
+              <svg viewBox="0 0 220 130" aria-hidden="true">
+                <path d="M26 58 Q 40 44 54 58 Q 68 44 82 58" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M104 40 Q 116 30 128 40 Q 140 30 152 40" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M72 88 Q 88 72 104 88 Q 120 72 136 88" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M150 74 Q 160 66 170 74 Q 180 66 190 74" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
             </div>
             <p class="journal-card__meta">Apr 18 &middot; Field notes</p>
             <h3>Five warblers to watch for in the valley this May</h3>
@@ -571,8 +607,13 @@
           </a>
 
           <a href="#" class="journal-card reveal">
-            <div class="journal-card__media">
-              <img src="https://images.unsplash.com/photo-1593810450967-f9c42742e326?auto=format&fit=crop&w=1000&q=80" alt="" loading="lazy" />
+            <div class="journal-card__media media-motif media-motif--warm">
+              <svg viewBox="0 0 220 130" aria-hidden="true">
+                <path d="M26 58 Q 40 44 54 58 Q 68 44 82 58" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M104 40 Q 116 30 128 40 Q 140 30 152 40" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M72 88 Q 88 72 104 88 Q 120 72 136 88" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linecap="round"/>
+                <path d="M150 74 Q 160 66 170 74 Q 180 66 190 74" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>
+              </svg>
             </div>
             <p class="journal-card__meta">Apr 1 &middot; Practice</p>
             <h3>Why slow flow is the hardest practice in the room</h3>
@@ -710,12 +751,12 @@
           <a href="#visit">Visit</a>
           <a href="book.html">Book a Class</a>
         </nav>
-        <div>
+        <nav aria-label="Social">
           <h4>Follow along</h4>
           <a href="#">Instagram</a>
           <a href="#">YouTube</a>
           <a href="#">Spotify</a>
-        </div>
+        </nav>
       </div>
       <div class="container footer__base">
         <p>&copy; 2026 Birdsong Yoga &middot; Northampton, MA</p>

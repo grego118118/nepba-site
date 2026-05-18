@@ -218,8 +218,9 @@ These are the upsells / phase-2 ideas referenced in the cold-call email:
 - All animations respect `prefers-reduced-motion`.
 - All interactive elements are keyboard accessible and have visible focus states.
 - The site uses semantic HTML5 (`<header>`, `<nav>`, `<section>`, `<article>`, `<figure>`) so it lands well in screen readers and search engines.
-- Images are hot-linked from Unsplash for the demo. Replace with Maggie's own photography before launch — the site will look 10× better with real Northampton imagery.
-- Bird silhouettes in the hero, the about section, and the logo are all hand-tuned inline SVG, so they scale crisply on retina displays.
+- The site is **fully self-contained** — no external image dependencies, so it can never show a broken image and loads instantly. The hero, the about panel, and the journal cards use hand-built CSS gradients and inline-SVG bird motifs (the `.media-motif` treatment). Drop in Maggie's own photography before launch: replace a `.media-motif` block with an `<img>`, or set a `background-image` on the frame — the site will look 10× better with real Northampton imagery, and the gradients already provide a graceful fallback while photos load.
+- Bird silhouettes in the hero, the about section, the journal, and the logo are all hand-tuned inline SVG, so they scale crisply on retina displays.
+- Fully responsive and tested down to a 320px-wide viewport — no horizontal scrolling, no clipped content.
 
 ---
 

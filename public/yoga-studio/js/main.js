@@ -109,7 +109,6 @@
             <div class="schedule__item-title">${c.name}</div>
             <div class="schedule__item-meta">${c.duration} &middot; ${c.level}</div>
           </div>
-          <div class="schedule__item-meta"></div>
           <a href="book.html?class=${encodeURIComponent(c.name)}" class="btn btn--ghost">Reserve</a>
         </div>`
       )
