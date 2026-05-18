@@ -166,4 +166,57 @@
       contact.reset();
     });
   }
+
+  /* ---------- SCROLL PROGRESS BAR ---------- */
+  const progress = document.getElementById("scrollProgress");
+  if (progress) {
+    const updateProgress = () => {
+      const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollable > 0 ? (window.scrollY / scrollable) * 100 : 0;
+      progress.style.width = Math.min(pct, 100) + "%";
+    };
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  }
+
+  /* ---------- ANIMATED STAT COUNTERS ---------- */
+  const stats = document.querySelectorAll(".stat__num");
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  const finalValue = (el) =>
+    (el.dataset.count || "0") + (el.dataset.suffix || "");
+
+  const countUp = (el) => {
+    const target = parseInt(el.dataset.count, 10) || 0;
+    const suffix = el.dataset.suffix || "";
+    const duration = 1500;
+    const startTime = performance.now();
+    const tick = (now) => {
+      const t = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.textContent = Math.round(target * eased) + suffix;
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  if (stats.length) {
+    if (reduceMotion || !("IntersectionObserver" in window)) {
+      stats.forEach((el) => (el.textContent = finalValue(el)));
+    } else {
+      const statObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              countUp(entry.target);
+              statObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.55 }
+      );
+      stats.forEach((el) => statObserver.observe(el));
+    }
+  }
 })();

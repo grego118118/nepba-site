@@ -27,6 +27,7 @@
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%95%8A%EF%B8%8F%3C/text%3E%3C/svg%3E" />
   </head>
   <body>
+    <div class="scroll-progress" id="scrollProgress" aria-hidden="true"></div>
     <!-- ========== NAV ========== -->
     <header class="nav" id="nav">
       <div class="nav__inner container">
@@ -187,6 +188,28 @@
         <span>Workshops</span><span>&#10070;</span>
       </div>
     </div>
+
+    <!-- ========== STATS ========== -->
+    <section class="stats" aria-label="The studio at a glance">
+      <div class="container stats__grid">
+        <div class="stat reveal">
+          <span class="stat__num" data-count="15" data-suffix="+">0</span>
+          <span class="stat__label">Years of practice</span>
+        </div>
+        <div class="stat reveal">
+          <span class="stat__num" data-count="6">0</span>
+          <span class="stat__label">Signature class styles</span>
+        </div>
+        <div class="stat reveal">
+          <span class="stat__num" data-count="12">0</span>
+          <span class="stat__label">Students per class, max</span>
+        </div>
+        <div class="stat reveal">
+          <span class="stat__num" data-count="500">0</span>
+          <span class="stat__label">Hour Yoga Alliance certified</span>
+        </div>
+      </div>
+    </section>
 
     <!-- ========== ABOUT ========== -->
     <section class="section about" id="about">
@@ -369,6 +392,59 @@
 
         <div class="schedule__list" id="scheduleList">
           <!-- Filled by JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== FIRST VISIT ========== -->
+    <section class="section section--cream first-visit" id="first-visit">
+      <div class="container">
+        <header class="section__header reveal">
+          <p class="eyebrow">New here?</p>
+          <h2 class="h2">Your first visit</h2>
+          <p class="section__sub">
+            If you've never set foot in a yoga studio, this one's for you.
+            Here's exactly what to expect &mdash; no surprises, no pressure.
+          </p>
+        </header>
+
+        <div class="steps">
+          <article class="step reveal">
+            <span class="step__num">01</span>
+            <h3>Arrive a little early</h3>
+            <p>
+              Come 10&ndash;15 minutes before class. Maggie will show you
+              around, help you settle in, and answer anything on your mind.
+            </p>
+          </article>
+          <article class="step reveal">
+            <span class="step__num">02</span>
+            <h3>We provide everything</h3>
+            <p>
+              Mats, bolsters, blocks, straps and blankets are all here and
+              included. Bring water and, if you like, a small towel.
+            </p>
+          </article>
+          <article class="step reveal">
+            <span class="step__num">03</span>
+            <h3>Wear what's comfortable</h3>
+            <p>
+              Anything you can move and breathe in. No special clothing, no
+              brand, no spending required. We practise barefoot.
+            </p>
+          </article>
+          <article class="step reveal">
+            <span class="step__num">04</span>
+            <h3>Move at your own pace</h3>
+            <p>
+              Every posture has an easier option, and resting is always
+              welcome. Your first class is just $15 &mdash; come as you are.
+            </p>
+          </article>
+        </div>
+
+        <div class="first-visit__cta reveal">
+          <a href="/yoga-studio/book.html?plan=intro" class="btn btn--primary btn--large">Book your first class &mdash; $15</a>
         </div>
       </div>
     </section>
@@ -623,6 +699,87 @@
       </div>
     </section>
 
+    <!-- ========== FAQ ========== -->
+    <section class="section section--cream faq" id="faq">
+      <div class="container faq__grid">
+        <div class="faq__intro">
+          <p class="eyebrow reveal">Good to know</p>
+          <h2 class="h2 reveal">Questions, answered</h2>
+          <p class="section__sub reveal">
+            Still wondering about something? Maggie is always happy to talk it
+            through &mdash; just <a href="#contact">send a note</a>.
+          </p>
+          <svg class="faq__bird" viewBox="0 0 200 200" aria-hidden="true">
+            <path
+              d="M30 110 C 60 70, 110 60, 160 80 C 150 95, 130 105, 115 105 C 145 115, 170 130, 185 165 C 145 150, 100 150, 65 170 C 50 155, 38 135, 30 110 Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+
+        <div class="faq__list reveal">
+          <details class="faq__item">
+            <summary>I've never done yoga. Which class should I start with?</summary>
+            <div class="faq__answer">
+              <p>
+                Start with <em>Slow &amp; Steady Vinyasa</em>, <em>Soft Sunday
+                Flow</em>, or our four-week <em>Beginners' Series</em>. All are
+                paced gently with clear instruction &mdash; and Maggie will keep
+                an eye on you.
+              </p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary>Do I need to bring anything?</summary>
+            <div class="faq__answer">
+              <p>
+                Just water and yourself. Mats, bolsters, blocks, straps and
+                blankets are all provided and included in every class.
+              </p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary>What should I wear?</summary>
+            <div class="faq__answer">
+              <p>
+                Anything comfortable you can move and breathe in. We practise
+                barefoot, so no special footwear &mdash; and no need to buy
+                anything new.
+              </p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary>Can I pause or cancel my membership?</summary>
+            <div class="faq__answer">
+              <p>
+                Yes &mdash; the Flock Membership can be paused or cancelled any
+                time, with no fee. Class packs stay valid for six months.
+              </p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary>What happens to outdoor classes if the weather turns?</summary>
+            <div class="faq__answer">
+              <p>
+                If Saturday's Arcadia class is rained out we move it indoors to
+                the studio, same time. You'll always get an email the evening
+                before with the final call.
+              </p>
+            </div>
+          </details>
+          <details class="faq__item">
+            <summary>Is there parking?</summary>
+            <div class="faq__answer">
+              <p>
+                There's a small lot behind the building, free for students, plus
+                metered street parking on Main. The PVTA B43 stops at the corner.
+              </p>
+            </div>
+          </details>
+        </div>
+      </div>
+    </section>
+
     <!-- ========== NEWSLETTER ========== -->
     <section class="section newsletter">
       <div class="container newsletter__inner reveal">
@@ -760,7 +917,11 @@
       </div>
       <div class="container footer__base">
         <p>&copy; 2026 Birdsong Yoga &middot; Northampton, MA</p>
-        <p>Designed with care &middot; <a href="#top">Back to top &uarr;</a></p>
+        <p class="footer__credit">
+          Website by
+          <a href="https://gowebautomations.com" target="_blank" rel="noopener noreferrer">Go Web Automations</a>
+        </p>
+        <p><a href="#top">Back to top &uarr;</a></p>
       </div>
     </footer>
 

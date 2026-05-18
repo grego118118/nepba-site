@@ -377,6 +377,11 @@ p { margin: 0 0 1em; }
     rgba(200, 147, 88, 0.26) 36%,
     rgba(200, 147, 88, 0) 70%
   );
+  animation: sunGlow 9s ease-in-out infinite;
+}
+@keyframes sunGlow {
+  0%, 100% { opacity: 0.82; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
 }
 .hero__hills {
   position: absolute;
@@ -1228,6 +1233,15 @@ p { margin: 0 0 1em; }
 }
 .footer__base p { margin: 0; }
 .footer__base a { color: var(--gold-soft); }
+.footer__credit a {
+  border-bottom: 1px solid rgba(217, 179, 136, 0.4);
+  padding-bottom: 1px;
+  transition: color 0.3s var(--ease), border-color 0.3s var(--ease);
+}
+.footer__credit a:hover {
+  color: var(--cream);
+  border-bottom-color: var(--cream);
+}
 
 /* =========================================================
    BOOK PAGE
@@ -1532,6 +1546,184 @@ p { margin: 0 0 1em; }
 }
 
 /* =========================================================
+   SCROLL PROGRESS
+   ========================================================= */
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0;
+  background: linear-gradient(90deg, var(--sage), var(--gold));
+  z-index: 150;
+  transition: width 0.12s linear;
+}
+
+/* =========================================================
+   STATS BAND
+   ========================================================= */
+.stats {
+  background: var(--cream);
+  border-bottom: 1px solid var(--line);
+  padding: 3.4rem 0;
+}
+.stats__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.stat {
+  text-align: center;
+  padding: 0.4rem 1rem;
+  border-right: 1px solid var(--line);
+}
+.stat:last-child {
+  border-right: 0;
+}
+.stat__num {
+  display: block;
+  font-family: var(--serif);
+  font-size: clamp(2.6rem, 5vw, 3.7rem);
+  font-weight: 500;
+  color: var(--gold);
+  line-height: 1;
+  letter-spacing: -0.01em;
+}
+.stat__label {
+  display: block;
+  margin-top: 0.7rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* =========================================================
+   FIRST VISIT
+   ========================================================= */
+.steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.4rem;
+}
+.step {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 2.1rem 1.7rem;
+  transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease),
+    border-color 0.4s var(--ease);
+}
+.step:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 28px 56px -32px rgba(28, 42, 31, 0.3);
+  border-color: var(--sage);
+}
+.step__num {
+  display: block;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 2.5rem;
+  line-height: 1;
+  color: var(--gold-soft);
+  margin-bottom: 0.9rem;
+}
+.step h3 {
+  font-size: 1.32rem;
+  margin-bottom: 0.4rem;
+}
+.step p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.96rem;
+}
+.first-visit__cta {
+  text-align: center;
+  margin-top: 3.2rem;
+}
+
+/* =========================================================
+   FAQ
+   ========================================================= */
+.faq__grid {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 4rem;
+  align-items: start;
+}
+.faq__intro {
+  position: sticky;
+  top: 6rem;
+}
+.faq__bird {
+  width: 116px;
+  height: auto;
+  color: var(--gold-soft);
+  opacity: 0.55;
+  margin-top: 1.8rem;
+}
+.faq__list {
+  display: grid;
+  gap: 0.8rem;
+}
+.faq__item {
+  background: var(--cream);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color 0.3s var(--ease), box-shadow 0.3s var(--ease);
+}
+.faq__item[open] {
+  border-color: var(--sage);
+  box-shadow: 0 18px 40px -28px rgba(28, 42, 31, 0.32);
+}
+.faq__item summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 1.35rem 1.6rem;
+  font-family: var(--serif);
+  font-size: 1.22rem;
+  color: var(--forest-deep);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.2rem;
+}
+.faq__item summary::-webkit-details-marker {
+  display: none;
+}
+.faq__item summary::after {
+  content: "";
+  flex-shrink: 0;
+  width: 11px;
+  height: 11px;
+  border-right: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  transform: rotate(45deg);
+  transition: transform 0.3s var(--ease);
+}
+.faq__item[open] summary::after {
+  transform: rotate(-135deg);
+}
+.faq__item summary:hover {
+  color: var(--gold);
+}
+.faq__answer {
+  padding: 0 1.6rem 1.5rem;
+}
+.faq__answer p {
+  margin: 0;
+  color: var(--muted);
+}
+.faq__item[open] .faq__answer {
+  animation: faqIn 0.36s var(--ease);
+}
+@keyframes faqIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* =========================================================
    REVEAL ANIMATIONS
    ========================================================= */
 .reveal {
@@ -1576,6 +1768,12 @@ p { margin: 0 0 1em; }
   .testimonials__grid,
   .journal__grid { grid-template-columns: 1fr; }
 
+  .steps { grid-template-columns: repeat(2, 1fr); }
+
+  .faq__grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .faq__intro { position: static; }
+  .faq__bird { display: none; }
+
   .book__grid { grid-template-columns: 1fr; }
   .book__summary { position: static; }
 
@@ -1603,6 +1801,13 @@ p { margin: 0 0 1em; }
   .card--feature { grid-column: span 1; }
 
   .pricing__grid { grid-template-columns: 1fr; }
+
+  .stats { padding: 2.6rem 0; }
+  .stats__grid { grid-template-columns: repeat(2, 1fr); gap: 2rem 1rem; }
+  .stat { border-right: 0; }
+  .stat:nth-child(odd) { border-right: 1px solid var(--line); }
+
+  .steps { grid-template-columns: 1fr; }
 
   .about__media-bird { width: 116px; right: -6px; bottom: -22px; }
   .hero__bird--3 { display: none; }

@@ -10,13 +10,15 @@ This folder is a self-contained static site — drop it on Vercel, Netlify, GitH
 
 ```
 yoga-studio/
-├── index.html          # Single-page site: hero, about, classes,
-│                         schedule, pricing, retreats, testimonials,
-│                         journal, newsletter, contact, footer
+├── index.html          # Single-page site: hero, stats band, about,
+│                         classes, schedule, first-visit, pricing,
+│                         retreats, testimonials, journal, FAQ,
+│                         newsletter, contact, footer
 ├── book.html           # Multi-step booking + Stripe checkout flow
-├── css/styles.css      # Design system + all components (~1,000 lines)
-├── js/main.js          # Nav, mobile menu, reveal animations,
-│                         schedule renderer, newsletter, contact
+├── css/styles.css      # Design system + all components
+├── js/main.js          # Nav, mobile menu, reveal animations, scroll
+│                         progress, animated stat counters, schedule
+│                         renderer, newsletter, contact
 └── js/book.js          # Plan + class selection, order summary,
                           Stripe handoff (demo mode by default)
 ```
